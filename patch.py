@@ -40,24 +40,11 @@ class ConnectionEdge:
         self.e1 = e1
 
 
-class Patch:
-    def __init__(self, dagPath):
-        self._dagPath = dagPath
+def flattenTree(dagPath, tree):
 
-    def createForTree(self, tree):
-        mesh = MFnMesh()
-
-        polyIter = MItMeshPolygon(self._dagPath)
-        setIter(polyIter, tree.node)
-        edges = MIntArray()
-        polyIter.getEdges(edges)
-        initialEdge = edges[0]
-
-        self._create(tree, ConnectionEdge(initialEdge, MVector(0,0,0), MVector(1,0,0)), mesh)
-
-    def _create(self, tree, connectionEdge, mesh):
+    def flattenSubtree(subtree, connectionEdge, mesh):
         def mapVertex(vertexIndex):
-            vertexIter = MItMeshVertex(self._dagPath)
+            vertexIter = MItMeshVertex(dagPath)
             setIter(vertexIter, vertexIndex)
             vertex = vertexIter.position()
             localPosition = localCoordinateSystem.toLocal(vertex)
@@ -65,16 +52,16 @@ class Patch:
             return MPoint(globalPosition)
 
         def createFaces(faceIndex):
-            edgeCycles = self._getEdgeCycles(faceIndex)
+            edgeCycles = getEdgeCycles(faceIndex)
             newVertices = MPointArray()
             for edgeCycle in edgeCycles:
-                vertexCycle = self._getVertexCycle(edgeCycle)
+                vertexCycle = getVertexCycle(edgeCycle)
                 for vertexIndex in vertexCycle:
                     newVertices.append(mapVertex(vertexIndex))
             mesh.addPolygon(newVertices)
 
         def getConnectionEdgeForEdge(edgeIndex):
-            edgeIter = MItMeshEdge(self._dagPath)
+            edgeIter = MItMeshEdge(dagPath)
             setIter(edgeIter, edgeIndex)
             begin = mapVertex(edgeIter.index(0))
             end = mapVertex(edgeIter.index(1))
@@ -82,20 +69,20 @@ class Patch:
             e1.normalize()
             return ConnectionEdge(edgeIndex, begin, e1)
 
-        faceIndex = tree.node
-        localCoordinateSystem = self._getCoordinateSystemForEdge(connectionEdge.index, faceIndex)
+        faceIndex = subtree.node
+        localCoordinateSystem = getCoordinateSystemForEdge(connectionEdge.index, faceIndex)
         e2 = connectionEdge.e1 ^ MVector(0,1,0)
         globalCoodinateSystem = CoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
         createFaces(faceIndex)
 
-        for child in tree.children:
-            sharedEdge = self._getSharedEdge(faceIndex, child.node)
+        for child in subtree.children:
+            sharedEdge = getSharedEdge(faceIndex, child.node)
             connectionEdge = getConnectionEdgeForEdge(sharedEdge)
-            self._create(child, connectionEdge, mesh)
+            flattenSubtree(child, connectionEdge, mesh)
 
-    def _getSharedEdge(self, face, childFace):
-        polyIter = MItMeshPolygon(self._dagPath)
+    def getSharedEdge(face, childFace):
+        polyIter = MItMeshPolygon(dagPath)
         edges = MIntArray()
         setIter(polyIter, face)
         polyIter.getEdges(edges)
@@ -104,10 +91,10 @@ class Patch:
         polyIter.getEdges(childEdges)
         return (set(edges) & set(childEdges)).pop()
 
-    def _getCoordinateSystemForEdge(self, edgeIndex, faceIndex):
-        edgeIter = MItMeshEdge(self._dagPath)
+    def getCoordinateSystemForEdge(edgeIndex, faceIndex):
+        edgeIter = MItMeshEdge(dagPath)
         setIter(edgeIter, edgeIndex)
-        polyIter = MItMeshPolygon(self._dagPath)
+        polyIter = MItMeshPolygon(dagPath)
         setIter(polyIter,faceIndex)
         begin = edgeIter.point(0)
         end = edgeIter.point(1)
@@ -119,8 +106,8 @@ class Patch:
         e2.normalize()
         return CoordinateSystem(begin, e1, e2)
 
-    def _getVertexCycle(self, edgeCycle):
-        edgeIter = MItMeshEdge(self._dagPath)
+    def getVertexCycle(edgeCycle):
+        edgeIter = MItMeshEdge(dagPath)
 
         def getEdge(edgeIndex):
             setIter(edgeIter, edgeIndex)
@@ -137,9 +124,9 @@ class Patch:
             prevEdge = (fst, snd)
         return retval
 
-    def _getEdgeCycles(self, poly):
-        polyIter = MItMeshPolygon(self._dagPath)
-        edgeIter = MItMeshEdge(self._dagPath)
+    def getEdgeCycles(poly):
+        polyIter = MItMeshPolygon(dagPath)
+        edgeIter = MItMeshEdge(dagPath)
         setIter(polyIter, poly)
         edgeIndices = MIntArray()
         polyIter.getEdges(edgeIndices)
@@ -168,3 +155,13 @@ class Patch:
             if not (set(firstEdge) & set(lastEdge)):
                 raise 'broken cycle detected!'
         return retval
+
+    mesh = MFnMesh()
+
+    polyIter = MItMeshPolygon(dagPath)
+    setIter(polyIter, tree.node)
+    edges = MIntArray()
+    polyIter.getEdges(edges)
+    initialEdge = edges[0]
+
+    flattenSubtree(tree, ConnectionEdge(initialEdge, MVector(0,0,0), MVector(1,0,0)), mesh)
