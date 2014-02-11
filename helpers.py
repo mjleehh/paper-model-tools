@@ -1,4 +1,5 @@
-from maya.OpenMaya import *
+from maya.OpenMaya import MScriptUtil
+
 
 def setIter(iter, index):
     prevIndex = MScriptUtil()

@@ -1,6 +1,5 @@
-from maya.OpenMaya import *
-
-from helpers import *
+from maya.OpenMaya import MItMeshPolygon, MIntArray
+from helpers import setIter
 
 
 class Node:
@@ -21,13 +20,13 @@ class FaceTree:
         self._patch = patch
 
     def getForCenter(self, initialFace):
-        print("-- duplicating patch --")
+        print("duplicating patch")
         initialFace = self._patch[initialFace]
         remainingFaces = set(self._patch)
         remainingFaces.remove(initialFace)
         faceIter = self._createFaceIter(initialFace)
         tree = self._extractConnectedFaces(faceIter, remainingFaces)
-        print("-- done --")
+        print("duplicating patch ... done")
         return tree
 
     def _createFaceIter(self, initialFace):

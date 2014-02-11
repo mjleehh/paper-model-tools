@@ -1,12 +1,12 @@
-from maya.OpenMaya import *
-from OpenMaya import MVector, MItMeshPolygon, MIntArray, MFnMesh, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
-
-from helpers import *
+from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MFnMesh, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
+from helpers import setIter
 
 
 class CoordinateSystem:
     """ A 2D coordinate system with origin other than 0 in 3D space
 
+    origin   the origin of the coordinate system realtive to global space
+    e1, e2   orthogonal unit vectors
     """
     def __init__(self, origin, e1, e2):
         self.origin = origin
@@ -62,15 +62,13 @@ class Patch:
             vertex = vertexIter.position()
             localPosition = localCoordinateSystem.toLocal(vertex)
             globalPosition = globalCoodinateSystem.toGlobal(localPosition)
-            v2print(localPosition)
-            vprint(globalPosition)
             return MPoint(globalPosition)
 
         def createFaces(faceIndex):
             edgeCycles = self._getEdgeCycles(faceIndex)
+            newVertices = MPointArray()
             for edgeCycle in edgeCycles:
                 vertexCycle = self._getVertexCycle(edgeCycle)
-                newVertices = MPointArray()
                 for vertexIndex in vertexCycle:
                     newVertices.append(mapVertex(vertexIndex))
             mesh.addPolygon(newVertices)
@@ -168,5 +166,5 @@ class Patch:
             firstEdge = getEdgeVertexIndices(cyle[0])
             lastEdge = getEdgeVertexIndices(cyle[1])
             if not (set(firstEdge) & set(lastEdge)):
-                'Broken cycle detected!'
+                raise 'broken cycle detected!'
         return retval

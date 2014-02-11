@@ -1,5 +1,6 @@
-from maya.OpenMaya import *
-from helpers import *
+from maya.OpenMaya import MItMeshPolygon, MIntArray
+from helpers import setIter
+
 
 class ConnectedFaces:
     def __init__(self, dagPath, components):
@@ -7,21 +8,20 @@ class ConnectedFaces:
         self._components = components
 
     def get(self):
-        print('--- finding sets of connected faces ---')
+        print('finding sets of connected faces')
         patches = []
         remainingFaces = set(self._getFaceList())
         while len(remainingFaces) > 0:
             patches.append(self._findPatch(remainingFaces))
-        print("--- done ---")
+        print('finding sets of connected faces ... done')
+        print('found %(numsets)i sets of connected faces' % {'numsets' : len(patches)})
         return patches
 
     def _findPatch(self, remainingFaces):
-        print("-- finding set of connected faces --")
         initialFace = iter(remainingFaces).next()
         faceIter = self._createFaceIter()
         setIter(faceIter, initialFace)
         res = self._addConnectedFaces(faceIter, remainingFaces)
-        print("-- done --")
         return res
 
     def _createFaceIter(self):
@@ -46,4 +46,3 @@ class ConnectedFaces:
                 setIter(faceIter, connectedFace)
                 patch.extend(self._addConnectedFaces(faceIter, remainingFaces))
         return patch
-
