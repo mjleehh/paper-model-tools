@@ -19,7 +19,25 @@ class Selection:
         om.MGlobal.setActiveSelectionList(self.selection)
 
 
-class SelectObject():
+class DoNothing():
+    """ Do nothing on input. When the context has been completed it remains in this state. """
+    def __init__(self, context):
+        self.context = context
+
+    def selectionChanged(self):
+        return self
+
+    def delete(self):
+        return self
+
+    def complete(self):
+        return self
+
+    def abort(self):
+        return self
+
+
+class SelectObject(DoNothing):
     """ Select an object for the select faces in order tool. """
 
     def __init__(self, context):
@@ -35,6 +53,17 @@ class SelectObject():
             self._context._setHelpString('Select an object')
             return self
 
+    def delete(self):
+        return self.abort()
+
+    def complete(self):
+        return self.abort()
+
+    def abort(self):
+        om.MGlobal.displayWarning('Nothing done.')
+        self._context.unlisten()
+        return DoNothing(self._context)
+
     def _getPrimarySelection(self):
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
@@ -46,13 +75,8 @@ class SelectObject():
         else:
             return None
 
-    def complete(self):
-        om.MGlobal.displayWarning('Nothing done.')
-        self._context.unlisten()
-        return DoNothing(self._context)
 
-
-class SelectFacesInOrder():
+class SelectFacesInOrder(DoNothing):
     """ Select faces in order. """
 
     def __init__(self, context, dagPath):
@@ -73,7 +97,7 @@ class SelectFacesInOrder():
         self._context.unlisten()
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
-        if not selection.isEmpty():
+        if not selection.length() is 0:
             dagPath = om.MDagPath()
             components = om.MObject()
             selection.getDagPath(0, dagPath, components)
@@ -90,45 +114,49 @@ class SelectFacesInOrder():
             print('faces: ' + str(self._faces))
             print('new faces ' + str(newFaces))
 
-            faceComponents = om.MFnSingleIndexedComponent()
-            faceComponents.create(om.MFn.kMeshPolygonComponent)
-            for face in self._faces:
-                faceComponents.addElement(face)
-
-            if not faceComponents.isEmpty():
-                allConnectedFaces = []
-                faceIter = om.MItMeshPolygon(dagPath, faceComponents.object())
-                while not faceIter.isDone():
-                    connectedFaces = om.MIntArray()
-                    faceIter.getConnectedFaces(connectedFaces)
-                    allConnectedFaces.extend(connectedFaces)
-                    faceIter.next()
-                self._selectableFaces = frozenset(allConnectedFaces)
-
-            selection = om.MSelectionList()
-            selection.add(dagPath, faceComponents.object())
-            om.MGlobal.setActiveSelectionList(selection)
+            self._selectFaces()
 
             self._context.listen()
             return self
-        return self.complete()
+        print('selection was empty')
+        return self.abort()
+
+    def delete(self):
+        self._context.unlisten()
+        self._faces.pop()
+        self._selectFaces()
+        self._context.listen()
+        return self
 
     def complete(self):
         print('complete2')
+        return self.abort()
+
+    def abort(self):
         self._context.unlisten()
         return DoNothing(self._context)
 
+    def _selectFaces(self):
+        faceComponents = om.MFnSingleIndexedComponent()
+        faceComponents.create(om.MFn.kMeshPolygonComponent)
+        for face in self._faces:
+            faceComponents.addElement(face)
 
-class DoNothing():
+        selection = om.MSelectionList()
+        selection.add(self._dagPath, faceComponents.object())
+        om.MGlobal.setActiveSelectionList(selection)
+        self._updateSelectableFaces(faceComponents)
 
-    def __init__(self, context):
-        self.context = context
-
-    def selectionChanged(self):
-        return self
-
-    def complete(self):
-        return self
+    def _updateSelectableFaces(self, faceComponents):
+        if self._faces:
+            allConnectedFaces = []
+            faceIter = om.MItMeshPolygon(self._dagPath, faceComponents.object())
+            while not faceIter.isDone():
+                connectedFaces = om.MIntArray()
+                faceIter.getConnectedFaces(connectedFaces)
+                allConnectedFaces.extend(connectedFaces)
+                faceIter.next()
+                self._selectableFaces = frozenset(allConnectedFaces)
 
 
 class FacetreeSelectionContext(omp.MPxSelectionContext):
@@ -154,14 +182,13 @@ class FacetreeSelectionContext(omp.MPxSelectionContext):
         self.unlisten()
 
     def completeAction(self):
-        print('complete')
         self._state.complete()
 
     def deleteAction(self):
-        print('delete')
+        self._state.delete()
 
     def abortAction(self):
-        print('abort')
+        self._state.abort()
 
     def selectionChanged(self):
         self._state = self._state.selectionChanged()
