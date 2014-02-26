@@ -6,8 +6,7 @@ from patch import flattenTree
 
 
 def flattenMesh():
-    """ Unfold mesh selection.
-    """
+    """ Unfold mesh selection."""
     print("flattening selection")
 
     activeSelection = MSelectionList()
@@ -30,7 +29,7 @@ def flattenObjectsInSelectionList(selectionListIter):
 
         connectedFaceSets = findConnectedFaces(dagPath, components)
         for connectedFaceSet in connectedFaceSets:
-            tree = FaceTree(connectedFaceSet, dagPath).getForCenter(0)
+            tree = FaceTree(connectedFaceSet, dagPath).getForCenter()
             flattenTree(dagPath, tree)
         selectionListIter.next()
         print('flattening faces for selected object ... done')

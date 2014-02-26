@@ -15,14 +15,14 @@ class Node:
 
 
 class FaceTree:
-    def __init__(self, patch, dagPath):
+    def __init__(self, connectedFaces, dagPath):
         self._dagPath = dagPath
-        self._patch = patch
+        self._connectedFaces = connectedFaces
 
-    def getForCenter(self, initialFace):
+    def getForCenter(self):
         print("duplicating patch")
-        initialFace = self._patch[initialFace]
-        remainingFaces = set(self._patch)
+        initialFace = self._connectedFaces[0]
+        remainingFaces = set(self._connectedFaces)
         remainingFaces.remove(initialFace)
         faceIter = self._createFaceIter(initialFace)
         tree = self._extractConnectedFaces(faceIter, remainingFaces)
