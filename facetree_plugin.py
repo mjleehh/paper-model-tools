@@ -7,6 +7,7 @@ import sys
 class Selection:
     """ Save and restore the selection. """
     def __init__(self):
+        """ Store the current selection. """
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
         self.selection = selection
@@ -14,6 +15,7 @@ class Selection:
         self.selectionMode = om.MGlobal.selectionMode()
 
     def makeCurrent(self):
+        """ Replace the current selection with the stored one. """
         om.MGlobal.setSelectionMode(self.selectionMode)
         om.MGlobal.setComponentSelectionMask(self.componentSelectionMask)
         om.MGlobal.setActiveSelectionList(self.selection)
@@ -41,6 +43,7 @@ class SelectObject(DoNothing):
     """ Select an object for the select faces in order tool. """
 
     def __init__(self, context):
+        DoNothing.__init__(self, context)
         self._context = context
         context.listen()
 
@@ -80,6 +83,7 @@ class SelectFacesInOrder(DoNothing):
     """ Select faces in order. """
 
     def __init__(self, context, dagPath):
+        DoNothing.__init__(self, context)
         self._context = context
         self._dagPath = dagPath
         self._faces = []
@@ -167,60 +171,46 @@ class FacetreeSelectionContext(omp.MPxSelectionContext):
         self._selection = None
 
     def toolOnSetup(self, event):
+        """ Called each time the context is activated. """
         self._selection = Selection()
         self._state = SelectObject(self)
         self._state.selectionChanged()
 
     def toolOffCleanup(self):
+        """ Called each time the context is deactivated. """
         self.unlisten()
         if self._selection:
             self._selection.makeCurrent()
             self._selection = None
         self._state = None
-        print('unlisten')
         print('cleanup')
         self.unlisten()
 
     def completeAction(self):
+        """ Complete the tool (enter has been pressed). """
         self._state.complete()
 
     def deleteAction(self):
+        """ Go one step back (backspace has been pressed). """
         self._state.delete()
 
     def abortAction(self):
+        """ Abort the tool (escape has been pressed). """
         self._state.abort()
 
     def selectionChanged(self):
+        """ Called when the selection has changed. """
         self._state = self._state.selectionChanged()
 
     def listen(self):
+        """ Enable callback for selection changes. """
         self._callback = om.MModelMessage.addCallback(om.MModelMessage.kActiveListModified, selectionChanged, self)
 
     def unlisten(self):
+        """ Disable callback for selection changes. """
         if self._callback:
                 om.MModelMessage.removeCallback(self._callback)
                 self._callback = None
-
-    def currentlySelectedFaces(self):
-        faceIndices = om.MIntArray()
-        dagPath = None
-
-        selection = om.MSelectionList()
-        om.MGlobal.getActiveSelectionList(selection)
-        selectionIter = om.MItSelectionList(selection, om.MFn.kMeshPolygonComponent)
-
-        if not selectionIter.isDone():
-            dagPath = om.MDagPath()
-            if not selectionIter.hasComponents():
-                selectionIter.getDagPath(dagPath)
-            else:
-                components = om.MObject()
-                selectionIter.getDagPath(dagPath, components)
-                components = om.MFnSingleIndexedComponent(components)
-                components.getElements(faceIndices)
-            selectionIter.next()
-
-        return (dagPath, faceIndices)
 
 
 def selectionChanged(context):
