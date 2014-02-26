@@ -1,7 +1,7 @@
 from maya.OpenMaya import MSelectionList, MItSelectionList, MDagPath, MObject, MFn, MGlobal
 
 from connectedfaces import findConnectedFaces
-from facetree import FaceTree
+from facetree import createFacetree
 from patch import flattenTree
 
 
@@ -29,7 +29,7 @@ def flattenObjectsInSelectionList(selectionListIter):
 
         connectedFaceSets = findConnectedFaces(dagPath, components)
         for connectedFaceSet in connectedFaceSets:
-            tree = FaceTree(connectedFaceSet, dagPath).getForCenter()
+            tree = createFacetree(dagPath, connectedFaceSet)
             flattenTree(dagPath, tree)
         selectionListIter.next()
         print('flattening faces for selected object ... done')

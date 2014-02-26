@@ -3,6 +3,10 @@ from helpers import setIter
 
 
 class Node:
+    """ Nodes of a face tree.
+
+    A face tree structure, where each parent shares at least one edge with its siblings.
+    """
     def __init__(self, node, children):
         self.node = node
         self.children = children
@@ -14,27 +18,16 @@ class Node:
         return res
 
 
-class FaceTree:
-    def __init__(self, connectedFaces, dagPath):
-        self._dagPath = dagPath
-        self._connectedFaces = connectedFaces
+def createFacetree(dagPath, connectedFaces):
+    """ Create a face tree by appending as many faces to a parent face as possible.
+    """
 
-    def getForCenter(self):
-        print("duplicating patch")
-        initialFace = self._connectedFaces[0]
-        remainingFaces = set(self._connectedFaces)
-        remainingFaces.remove(initialFace)
-        faceIter = self._createFaceIter(initialFace)
-        tree = self._extractConnectedFaces(faceIter, remainingFaces)
-        print("duplicating patch ... done")
-        return tree
-
-    def _createFaceIter(self, initialFace):
-        faceIter = MItMeshPolygon(self._dagPath)
+    def createFaceIter(initialFace):
+        faceIter = MItMeshPolygon(dagPath)
         setIter(faceIter, initialFace)
         return faceIter
 
-    def _extractConnectedFaces(self, faceIter, remainingFaces):
+    def extractConnectedFaces(faceIter, remainingFaces):
         face = faceIter.index()
 
         connectedFaces = MIntArray()
@@ -45,6 +38,15 @@ class FaceTree:
         children = []
         for connectedFace in neighbours:
             setIter(faceIter, connectedFace)
-            children.append(self._extractConnectedFaces(faceIter, remainingFaces))
+            children.append(extractConnectedFaces(faceIter, remainingFaces))
 
         return Node(face, children)
+
+    print("duplicating patch")
+    initialFace = connectedFaces[0]
+    remainingFaces = set(connectedFaces)
+    remainingFaces.remove(initialFace)
+    faceIter = createFaceIter(initialFace)
+    tree = extractConnectedFaces(faceIter, remainingFaces)
+    print("duplicating patch ... done")
+    return tree
