@@ -69,7 +69,7 @@ def flattenTree(dagPath, tree):
             e1.normalize()
             return ConnectionEdge(edgeIndex, begin, e1)
 
-        faceIndex = subtree.node
+        faceIndex = subtree.value
         localCoordinateSystem = getCoordinateSystemForEdge(connectionEdge.index, faceIndex)
         e2 = connectionEdge.e1 ^ MVector(0,1,0)
         globalCoodinateSystem = CoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
@@ -77,7 +77,7 @@ def flattenTree(dagPath, tree):
         createFaces(faceIndex)
 
         for child in subtree.children:
-            sharedEdge = getSharedEdge(faceIndex, child.node)
+            sharedEdge = getSharedEdge(faceIndex, child.value)
             connectionEdge = getConnectionEdgeForEdge(sharedEdge)
             flattenSubtree(child, connectionEdge, mesh)
 
@@ -159,7 +159,7 @@ def flattenTree(dagPath, tree):
     mesh = MFnMesh()
 
     polyIter = MItMeshPolygon(dagPath)
-    setIter(polyIter, tree.node)
+    setIter(polyIter, tree.value)
     edges = MIntArray()
     polyIter.getEdges(edges)
     initialEdge = edges[0]
