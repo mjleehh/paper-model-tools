@@ -19,7 +19,7 @@ class Node:
 
 
 def createFacetreeLightning(dagPath, connectedFaces):
-    """ Create a face tree by appending as many faces to a parent face as possible.
+    """ Create a face tree with depth first strategy
     """
 
     def createFaceIter(initialFace):
@@ -52,6 +52,8 @@ def createFacetreeLightning(dagPath, connectedFaces):
 
 
 def createFacetreeSpiral(dagPath, connectedFaces):
+    """ Create a face tree with maximum children per parent node strategy
+    """
 
     def createFaceIter(initialFace):
         faceIter = MItMeshPolygon(dagPath)
@@ -88,3 +90,42 @@ def createFacetreeSpiral(dagPath, connectedFaces):
     print("duplicating patch ... done")
     return tree
 
+def createFacetreeSelectionOrder(dagPath, orderedSelectedFaces):
+
+    def createFaceIter(initialFace):
+        faceIter = MItMeshPolygon(dagPath)
+        setIter(faceIter, initialFace)
+        return faceIter
+
+    def addFaceStripToNode(node, remainingFaces):
+            print(node.value)
+            faceIter = createFaceIter(node.value)
+
+            connectedFaces = MIntArray()
+            faceIter.getConnectedFaces(connectedFaces)
+            newFace = remainingFaces[0]
+            if newFace in frozenset(connectedFaces):
+                del remainingFaces[0]
+                newNode = Node(newFace, [])
+                node.children.append(newNode)
+                if remainingFaces:
+                    addNextFaceStripToSubtree(newNode, remainingFaces)
+                return True
+
+    def addNextFaceStripToSubtree(node, remainingFaces):
+        if addFaceStripToNode(node, remainingFaces):
+            return True
+        else:
+            for child in node.children:
+                if addNextFaceStripToSubtree(child, remainingFaces):
+                    return True
+        return False
+
+    print("duplicating patch")
+    initialFace = orderedSelectedFaces[0]
+    remainingFaces = orderedSelectedFaces[1:]
+    tree = Node(initialFace, [])
+    while remainingFaces:
+        addNextFaceStripToSubtree(tree, remainingFaces)
+    print("duplicating patch ... done")
+    return tree
