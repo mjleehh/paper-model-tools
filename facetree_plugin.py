@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 import maya.OpenMayaMPx as omp
 
-from facetree import createFacetree
+from facetree import createFacetreeSelectionOrder
 from patch import flattenTree
 
 import sys
@@ -136,7 +136,7 @@ class SelectFacesInOrder(DoNothing):
         return self
 
     def complete(self):
-        tree = createFacetree(self._dagPath, self._faces)
+        tree = createFacetreeSelectionOrder(self._dagPath, self._faces)
         flattenTree(self._dagPath, tree)
         print('complete2')
         return self.abort()
