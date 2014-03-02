@@ -3,6 +3,13 @@ from helpers import setIter
 
 
 def findConnectedFaces(dagPath, components):
+    """ Given a mesh dag path and a subset of faces (optional) returns
+    connected face groups.
+
+    Connected faces share at least one edge. In a connected face group there
+    is at least one path from every face to every other face in the group via
+    a chain of connected faces.
+    """
 
     def findPatch(remainingFaces):
         initialFace = iter(remainingFaces).next()
