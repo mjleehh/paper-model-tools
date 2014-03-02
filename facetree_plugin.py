@@ -3,6 +3,7 @@ import maya.OpenMayaMPx as omp
 
 from facetree import createFacetreeSelectionOrder
 from patch import flattenTree
+from patchbuilder import MeshPatchBuilder
 
 import sys
 
@@ -25,20 +26,26 @@ class Selection:
 
 
 class DoNothing():
-    """ Do nothing on input. When the context has been completed it remains in this state. """
+    """ Do nothing on input. When the context has been completed it remains in
+        this state.
+    """
     def __init__(self, context):
         self.context = context
 
     def selectionChanged(self):
+        print('nothing callback')
         return self
 
     def delete(self):
+        print('nothing delete')
         return self
 
     def complete(self):
+        print('nothing complete')
         return self
 
     def abort(self):
+        print('nothing abort')
         return self
 
 
@@ -51,6 +58,7 @@ class SelectObject(DoNothing):
         context.listen()
 
     def selectionChanged(self):
+        print('select callback')
         primarySelection = self._getPrimarySelection()
         if primarySelection:
             self._context.unlisten()
@@ -60,14 +68,17 @@ class SelectObject(DoNothing):
             return self
 
     def delete(self):
+        print('select delete')
         return self.abort()
 
     def complete(self):
+        print('select complete')
         return self.abort()
 
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         self._context.unlisten()
+        print('select abort')
         return DoNothing(self._context)
 
     def _getPrimarySelection(self):
@@ -91,6 +102,7 @@ class SelectFacesInOrder(DoNothing):
         self._dagPath = dagPath
         self._faces = []
         self._selectableFaces = None
+        self._patchBuilder = MeshPatchBuilder()
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
         om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
         hiliteList = om.MSelectionList()
@@ -105,6 +117,7 @@ class SelectFacesInOrder(DoNothing):
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
         if not selection.length() is 0:
+            print('order evaluate')
             dagPath = om.MDagPath()
             components = om.MObject()
             selection.getDagPath(0, dagPath, components)
@@ -121,28 +134,37 @@ class SelectFacesInOrder(DoNothing):
             print('faces: ' + str(self._faces))
             print('new faces ' + str(newFaces))
 
-            self._selectFaces()
+            self.flatten()
 
+            self._selectFaces()
             self._context.listen()
             return self
         print('selection was empty')
         return self.abort()
 
+    def flatten(self):
+        tree = createFacetreeSelectionOrder(self._dagPath, self._faces)
+        self._patchBuilder.reset()
+        flattenTree(self._dagPath, tree, self._patchBuilder)
+
+
     def delete(self):
         self._context.unlisten()
         self._faces.pop()
+        self.flatten()
         self._selectFaces()
         self._context.listen()
+        print('order delete')
         return self
 
     def complete(self):
-        tree = createFacetreeSelectionOrder(self._dagPath, self._faces)
-        flattenTree(self._dagPath, tree)
-        print('complete2')
+        self.flatten()
+        print('order complete')
         return self.abort()
 
     def abort(self):
         self._context.unlisten()
+        print('order abort')
         return DoNothing(self._context)
 
     def _selectFaces(self):
