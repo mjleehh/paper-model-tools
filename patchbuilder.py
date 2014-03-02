@@ -7,7 +7,6 @@ class MeshPatchBuilder:
         self._createMesh()
 
     def addFace(self, face, vertices):
-        print('mapped ' + str(face) + ' -> ' + str(len(self.mapping)))
         self.mapping.append(face)
         self.mesh.addPolygon(vertices)
 
