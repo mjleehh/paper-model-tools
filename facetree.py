@@ -1,11 +1,10 @@
 from maya.OpenMaya import MItMeshPolygon, MIntArray
 from helpers import setIter
 
-
 class Node:
     """ Nodes of a face tree.
 
-    A face tree structure, where each parent shares at least one edge with its siblings.
+    A face tree structure, where each sibling face only shares one edge with its parent.
     """
     def __init__(self, value, children):
         self.value = value
