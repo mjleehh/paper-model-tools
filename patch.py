@@ -1,4 +1,5 @@
-from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MFnMesh, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
+from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
+import maya.OpenMaya as om
 from helpers import setIter
 
 
@@ -40,9 +41,19 @@ class ConnectionEdge:
         self.e1 = e1
 
 
-def flattenTree(dagPath, tree):
+class MeshPatchBuilder:
+    def __init__(self):
+        self.mapping = []
+        self.mesh = om.MFnMesh()
 
-    def flattenSubtree(subtree, connectionEdge, mesh):
+    def addFace(self, face, vertices):
+        print('mapped ' + str(face) + ' -> ' + str(len(self.mapping)))
+        self.mapping.append(face)
+        self.mesh.addPolygon(vertices)
+
+def flattenTree(dagPath, tree, patchBuilder):
+
+    def flattenSubtree(subtree, connectionEdge, patchBuilder):
         def mapVertex(vertexIndex):
             vertexIter = MItMeshVertex(dagPath)
             setIter(vertexIter, vertexIndex)
@@ -58,7 +69,7 @@ def flattenTree(dagPath, tree):
                 vertexCycle = getVertexCycle(edgeCycle)
                 for vertexIndex in vertexCycle:
                     newVertices.append(mapVertex(vertexIndex))
-            mesh.addPolygon(newVertices)
+            patchBuilder.addFace(faceIndex, newVertices)
 
         def getConnectionEdgeForEdge(edgeIndex):
             edgeIter = MItMeshEdge(dagPath)
@@ -70,7 +81,7 @@ def flattenTree(dagPath, tree):
             return ConnectionEdge(edgeIndex, begin, e1)
 
         faceIndex = subtree.value
-        localCoordinateSystem = getCoordinateSystemForEdge(connectionEdge.index, faceIndex)
+        localCoordinateSystem = getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, faceIndex)
         e2 = connectionEdge.e1 ^ MVector(0,1,0)
         globalCoodinateSystem = CoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
@@ -79,9 +90,16 @@ def flattenTree(dagPath, tree):
         for child in subtree.children:
             sharedEdge = getSharedEdge(faceIndex, child.value)
             connectionEdge = getConnectionEdgeForEdge(sharedEdge)
-            flattenSubtree(child, connectionEdge, mesh)
+            flattenSubtree(child, connectionEdge, patchBuilder)
 
     def getSharedEdge(face, childFace):
+        """ Get one of the edges that two faces share.
+
+        The edge returned is simply the first edge in the intersection.
+
+        Note: When placing two faces in a 2D plane preserving one shared edge
+        preserves all shared edges.
+        """
         polyIter = MItMeshPolygon(dagPath)
         edges = MIntArray()
         setIter(polyIter, face)
@@ -91,7 +109,19 @@ def flattenTree(dagPath, tree):
         polyIter.getEdges(childEdges)
         return (set(edges) & set(childEdges)).pop()
 
-    def getCoordinateSystemForEdge(edgeIndex, faceIndex):
+    def getFacePlaneCoordinateSystemForFaceEdge(edgeIndex, faceIndex):
+        """ Determine the 2D coordinate system for one of the face edges
+
+        The 2d coordinate system spans the face plane:
+        - the origin is the first vertex of the edge
+        - the first unit vector is the normalized vector from the first edge
+          vertex to the second edge vertex
+        - the second unit vector is the normalized vector directed at n x e_1
+
+        Faces in maya have counter clockwise vertex order. Thus e_2 faces
+        'into' the face area. The three vectors (e_1, e_2, n) for right handed
+        coordinates for the 3D space (e_1 x e_2 = n).
+        """
         edgeIter = MItMeshEdge(dagPath)
         setIter(edgeIter, edgeIndex)
         polyIter = MItMeshPolygon(dagPath)
@@ -107,6 +137,16 @@ def flattenTree(dagPath, tree):
         return CoordinateSystem(begin, e1, e2)
 
     def getVertexCycle(edgeCycle):
+        """ Returns a vertex cycle for a face from its edge cycles.
+
+        A face has several vertex cycles. These vertex cycles determine the edge
+        ordering in the face.
+
+        - The first vertex cycle describes the face boundary. It is in counter
+          clockwise order.
+        - All other vertex cycles describe holes in the face. These cycles are
+          in clockwise order.
+        """
         edgeIter = MItMeshEdge(dagPath)
 
         def getEdge(edgeIndex):
@@ -156,12 +196,10 @@ def flattenTree(dagPath, tree):
                 raise 'broken cycle detected!'
         return retval
 
-    mesh = MFnMesh()
-
     polyIter = MItMeshPolygon(dagPath)
     setIter(polyIter, tree.value)
     edges = MIntArray()
     polyIter.getEdges(edges)
     initialEdge = edges[0]
 
-    flattenSubtree(tree, ConnectionEdge(initialEdge, MVector(0,0,0), MVector(1,0,0)), mesh)
+    flattenSubtree(tree, ConnectionEdge(initialEdge, MVector(0,0,0), MVector(1,0,0)), patchBuilder)
