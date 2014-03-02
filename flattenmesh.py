@@ -3,7 +3,8 @@ from maya.OpenMaya import MSelectionList, MItSelectionList, MDagPath, MObject, M
 from connectedfaces import findConnectedFaces
 from facetree import createFacetreeLightning
 from facetree import createFacetreeSpiral
-from patch import flattenTree, MeshPatchBuilder
+from patch import flattenTree
+from patchbuilder import MeshPatchBuilder
 
 
 def flattenMesh(strategy = None):
