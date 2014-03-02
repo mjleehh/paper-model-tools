@@ -1,31 +1,7 @@
 from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
 import maya.OpenMaya as om
+from coordinatesystem import CoordinateSystem
 from helpers import setIter
-
-
-class CoordinateSystem:
-    """ A 2D coordinate system with origin other than 0 in 3D space
-
-    origin   the origin of the coordinate system realtive to global space
-    e1, e2   orthogonal unit vectors
-    """
-    def __init__(self, origin, e1, e2):
-        self.origin = origin
-        self.e1 = e1
-        self.e2 = e2
-
-    def toLocal(self, vg):
-        vLocalOrigin = vg - self.origin
-        return (self.e1 * vLocalOrigin, self.e2 * vLocalOrigin)
-
-    def toGlobal(self, vl):
-        fst = MVector(self.e1)
-        fst *= vl[0]
-        snd =  MVector(self.e2)
-        snd *= vl[1]
-        trd = MVector(self.origin)
-        vLocalOrigin = fst + snd
-        return vLocalOrigin + trd
 
 
 class ConnectionEdge:
@@ -42,7 +18,7 @@ class ConnectionEdge:
 
 def flattenTree(dagPath, tree, patchBuilder):
 
-    def flattenSubtree(subtree, connectionEdge, patchBuilder):
+    def flattenSubtree(subtree, connectionEdge, mappingPlaneNormal, patchBuilder):
         def mapVertex(vertexIndex):
             vertexIter = MItMeshVertex(dagPath)
             setIter(vertexIter, vertexIndex)
@@ -71,7 +47,7 @@ def flattenTree(dagPath, tree, patchBuilder):
 
         faceIndex = subtree.value
         localCoordinateSystem = getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, faceIndex)
-        e2 = connectionEdge.e1 ^ MVector(0,1,0)
+        e2 = connectionEdge.e1 ^ mappingPlaneNormal
         globalCoodinateSystem = CoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
         createFaces(faceIndex)
@@ -79,7 +55,7 @@ def flattenTree(dagPath, tree, patchBuilder):
         for child in subtree.children:
             sharedEdge = getSharedEdge(faceIndex, child.value)
             connectionEdge = getConnectionEdgeForEdge(sharedEdge)
-            flattenSubtree(child, connectionEdge, patchBuilder)
+            flattenSubtree(child, connectionEdge, mappingPlaneNormal, patchBuilder)
 
     def getSharedEdge(face, childFace):
         """ Get one of the edges that two faces share.
@@ -191,4 +167,9 @@ def flattenTree(dagPath, tree, patchBuilder):
     polyIter.getEdges(edges)
     initialEdge = edges[0]
 
-    flattenSubtree(tree, ConnectionEdge(initialEdge, MVector(0,0,0), MVector(1,0,0)), patchBuilder)
+    mappingPlaneOrigin = MVector(0, 0, 0)
+    mappingPlaneNormal = MVector(0, 1, 0)
+    mappedInitialEdgeDirection = MVector(1, 0, 0)
+    initialConnectionEdge = ConnectionEdge(initialEdge, mappingPlaneOrigin, mappedInitialEdgeDirection)
+
+    flattenSubtree(tree, initialConnectionEdge, mappingPlaneNormal, patchBuilder)
