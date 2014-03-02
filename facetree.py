@@ -67,7 +67,6 @@ def createFacetreeSpiral(dagPath, connectedFaces):
             addDirectChildren(node, remainingFaces)
 
     def addDirectChildren(node, remainingFaces):
-        print(node.value)
         faceIter = createFaceIter(node.value)
 
         connectedFaces = MIntArray()
@@ -97,7 +96,6 @@ def createFacetreeSelectionOrder(dagPath, orderedSelectedFaces):
         return faceIter
 
     def addFaceStripToNode(node, remainingFaces):
-            print(node.value)
             faceIter = createFaceIter(node.value)
 
             connectedFaces = MIntArray()
