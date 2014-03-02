@@ -40,17 +40,6 @@ class ConnectionEdge:
         self.origin = origin
         self.e1 = e1
 
-
-class MeshPatchBuilder:
-    def __init__(self):
-        self.mapping = []
-        self.mesh = om.MFnMesh()
-
-    def addFace(self, face, vertices):
-        print('mapped ' + str(face) + ' -> ' + str(len(self.mapping)))
-        self.mapping.append(face)
-        self.mesh.addPolygon(vertices)
-
 def flattenTree(dagPath, tree, patchBuilder):
 
     def flattenSubtree(subtree, connectionEdge, patchBuilder):
