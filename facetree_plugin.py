@@ -130,7 +130,6 @@ class SelectRootFace(DoNothing):
         print('root init')
         nextState = self._nextState()
         if nextState:
-            print('gggg')
             return self.advance(nextState)
         else:
             self._context.setHelpString('select the root face')
@@ -141,7 +140,6 @@ class SelectRootFace(DoNothing):
         print('root callback')
         nextState = self._nextState()
         if nextState:
-            print('kkk')
             return self.advance(nextState)
         else:
             self._waitForInput()
@@ -206,19 +204,20 @@ class SelectFacesInOrder(DoNothing):
         DoNothing.__init__(self, context)
         self._dagPath = dagPath
         self._rootFace = rootFace
+        self._faces = [rootFace]
+        self._selectableFaces = None
+        self._patchBuilder = MeshPatchBuilder()
 
     def init(self):
         print('order init')
-        self._faces = []
-        self._selectableFaces = None
-        self._patchBuilder = MeshPatchBuilder()
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
         om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
         hiliteList = om.MSelectionList()
         hiliteList.add(self._dagPath)
         om.MGlobal.setActiveSelectionList(hiliteList)
         om.MGlobal.setHiliteList(hiliteList)
-        self._context._setHelpString('Select faces in order')
+        self._selectFaces()
+        self._context.setHelpString('Select faces in order')
         self._context.listen()
         return self
 
