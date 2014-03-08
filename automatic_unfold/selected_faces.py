@@ -1,5 +1,5 @@
 from maya.OpenMaya import MItMeshPolygon, MIntArray
-from helpers import setIter
+from unfolder.util.helpers import setIter
 
 
 def findConnectedFaces(dagPath, components):
