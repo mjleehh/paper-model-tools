@@ -2,8 +2,7 @@ import maya.OpenMaya as om
 import maya.OpenMayaMPx as omp
 
 from unfolder.util.selection import Selection
-from unfolder.select_facetree.select_facetree_states import SelectObject
-
+from .states.initial_state import createInitialState
 
 class SelectFacetreeContext(omp.MPxSelectionContext):
     def __init__(self):
@@ -11,12 +10,11 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
         self._state = None
         self._callback = None
         self._selection = None
-        self.facetree = None
 
     def toolOnSetup(self, event):
         """ Called each time the context is activated. """
         self._selection = Selection()
-        self._state = SelectObject(self).init()
+        self._state = createInitialState(self)
 
     def toolOffCleanup(self):
         """ Called each time the context is deactivated. """

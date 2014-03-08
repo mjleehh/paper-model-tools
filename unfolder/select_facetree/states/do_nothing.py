@@ -1,0 +1,34 @@
+class DoNothing():
+    """ Final state of the face tree selection tool.
+
+        Do nothing on input. When the context has been completed it remains in
+        this state.
+    """
+    def __init__(self, context):
+        self._context = context
+
+    def init(self):
+        self._context.listen()
+        self._context.setHelpString('face tree selection tool done')
+        return self
+
+    def advance(self, nextState):
+        print('advance')
+        self._context.unlisten()
+        return nextState.init()
+
+    def selectionChanged(self):
+        print('nothing callback')
+        return self
+
+    def delete(self):
+        print('nothing delete')
+        return self
+
+    def complete(self):
+        print('nothing complete')
+        return self
+
+    def abort(self):
+        print('nothing abort')
+        return self
