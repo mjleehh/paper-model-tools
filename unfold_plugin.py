@@ -1,7 +1,7 @@
-import maya.OpenMayaMPx as omp
 import sys
 
-from select_facetree_context import SelectFacetreeContext
+import maya.OpenMayaMPx as omp
+from unfolder.select_facetree.select_facetree_context import SelectFacetreeContext
 
 
 def selectionChanged(context):
