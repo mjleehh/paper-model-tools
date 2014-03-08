@@ -1,14 +1,7 @@
+import maya.OpenMayaMPx as omp
 import sys
 
-import maya.OpenMayaMPx as omp
 from unfolder.select_facetree.select_facetree_context import SelectFacetreeContext
-
-
-def selectionChanged(context):
-    """ Callback for selection changes.
-
-    Delegates handling to context instance. """
-    context.selectionChanged()
 
 
 class FacetreeSelectionCommand(omp.MPxContextCommand):
@@ -23,12 +16,13 @@ class FacetreeSelectionCommand(omp.MPxContextCommand):
 def createCommand():
     return omp.asMPxPtr(FacetreeSelectionCommand())
 
-
 kPluginCmdName = "selectFacetree"
 
 
 # Initialize the script plug-in
 def initializePlugin(mobject):
+    print('Loading facetree selection plugin.')
+
     mplugin = omp.MFnPlugin(mobject)
     try:
         mplugin.registerContextCommand(kPluginCmdName, createCommand)
