@@ -2,22 +2,22 @@ try:
 	maya.cmds.deleteUI(facetreeToolContext, toolContext = True);
 	maya.cmds.unloadPlugin('facetree_plugin.py')
 
-	reload(flattenmesh)
+	reload(flatten_mesh)
 	reload(helpers)
-	reload(connectedfaces)
+	reload(selected_faces)
 	reload(facetree)
-	relaod(coordinatesystem)
+	relaod(coordinate_system)
 	reload(patch)
 except NameError:
 	import sys
 	if not 'u:/modules/' in sys.path:
 		sys.path.append('u:/modules')
 
-	import flattenmesh
+	import flatten_mesh
 	import helpers
-	import connectedfaces
+	import selected_faces
 	import facetree
-	import coordinatesystem
+	import coordinate_system
 	import patch
 
 maya.cmds.loadPlugin('u:/modules/facetree_plugin.py')

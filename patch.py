@@ -1,6 +1,6 @@
 from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
 import maya.OpenMaya as om
-from coordinatesystem import CoordinateSystem
+from coordinate_system import CoordinateSystem
 from helpers import setIter
 
 
