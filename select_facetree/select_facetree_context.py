@@ -1,7 +1,7 @@
 import maya.OpenMayaMPx as omp
 
-from selection import Selection
-from select_facetree_states import SelectObject
+from unfolder.util.selection import Selection
+from unfolder.select_facetree.select_facetree_states import SelectObject
 
 
 class SelectFacetreeContext(omp.MPxSelectionContext):
