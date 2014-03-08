@@ -1,10 +1,10 @@
 from maya.OpenMaya import MSelectionList, MItSelectionList, MDagPath, MObject, MFn, MGlobal
 
-from selected_faces import findConnectedFaces
-from facetree import createFacetreeLightning
-from facetree import createFacetreeSpiral
-from patch import flattenTree
-from patch_builder import MeshPatchBuilder
+from unfolder.automatic_unfold.selected_faces import findConnectedFaces
+from unfolder import createFacetreeLightning
+from unfolder import createFacetreeSpiral
+from unfolder.create_patch.patch import flattenTree
+from unfolder.create_patch.patch_builder import MeshPatchBuilder
 
 
 def flattenMesh(strategy = None):
