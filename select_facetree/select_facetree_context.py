@@ -1,3 +1,4 @@
+import maya.OpenMaya as om
 import maya.OpenMayaMPx as omp
 
 from unfolder.util.selection import Selection
@@ -55,3 +56,10 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
 
     def setHelpString(self, msg):
         self._setHelpString(msg)
+
+
+def selectionChanged(context):
+    """ Callback for selection changes.
+
+    Delegates handling to context instance. """
+    context.selectionChanged()

@@ -1,3 +1,5 @@
+import maya.OpenMaya as om
+
 class DoNothing():
     """ Final state of the face tree selection tool.
 

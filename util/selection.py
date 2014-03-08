@@ -1,3 +1,5 @@
+import maya.OpenMaya as om
+
 class Selection:
     """ Save and restore the selection. """
 
