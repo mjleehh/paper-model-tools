@@ -1,5 +1,5 @@
 from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
-from unfolder.util.plane_coordinate_system import CoordinateSystem
+from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
 from unfolder.util.helpers import setIter
 
 
@@ -47,7 +47,7 @@ def flattenTree(dagPath, tree, patchBuilder):
         faceIndex = subtree.value
         localCoordinateSystem = getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, faceIndex)
         e2 = connectionEdge.e1 ^ mappingPlaneNormal
-        globalCoodinateSystem = CoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
+        globalCoodinateSystem = PlaneCoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
         createFaces(faceIndex)
 
@@ -98,7 +98,7 @@ def flattenTree(dagPath, tree, patchBuilder):
         polyIter.getNormal(normal)
         e2 = normal ^ e1
         e2.normalize()
-        return CoordinateSystem(begin, e1, e2)
+        return PlaneCoordinateSystem(begin, e1, e2)
 
     def getVertexCycle(edgeCycle):
         """ Returns a vertex cycle for a face from its edge cycles.

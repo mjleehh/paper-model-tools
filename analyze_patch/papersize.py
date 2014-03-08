@@ -1,6 +1,6 @@
 import maya.OpenMaya as om
 
-from unfolder.util.plane_coordinate_system import CoordinateSystem
+from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
 from unfolder.create_patch.patch_builder import MeshPatchBuilder
 
 
@@ -11,7 +11,7 @@ def boundingRects(mappingPlaneNormal, vertices):
         e2 = e1 ^ om.MVector(mappingPlaneNormal)
         e2.normalize()
 
-        return CoordinateSystem(vertex1, e1, e2)
+        return PlaneCoordinateSystem(vertex1, e1, e2)
 
     def getBoundingRect(coordinateSystem):
         boundingRect = om.MBoundingBox()
