@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 
 
-class CoordinateSystem:
+class PlaneCoordinateSystem:
     """ A 2D coordinate system with origin other than 0 in 3D space
 
     origin   the origin of the coordinate system realtive to global space
