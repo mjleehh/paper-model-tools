@@ -1,7 +1,6 @@
 from maya.OpenMaya import MVector, MItMeshPolygon, MIntArray, MItMeshVertex, MPoint, MItMeshEdge, MPointArray
-import maya.OpenMaya as om
-from coordinate_system import CoordinateSystem
-from helpers import setIter
+from unfolder.util.plane_coordinate_system import CoordinateSystem
+from unfolder.util.helpers import setIter
 
 
 class ConnectionEdge:
