@@ -1,10 +1,7 @@
 import maya.OpenMaya as om
 
-from helpers import vprint
-
-
-from coordinate_system import CoordinateSystem
-from patch_builder import MeshPatchBuilder
+from unfolder.util.plane_coordinate_system import CoordinateSystem
+from unfolder.create_patch.patch_builder import MeshPatchBuilder
 
 
 def boundingRects(mappingPlaneNormal, vertices):
