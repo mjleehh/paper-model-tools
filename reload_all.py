@@ -40,11 +40,13 @@ reload(unfolder.select_facetree.select_facetree_context)
 import unfolder.select_facetree.states
 reload(unfolder.select_facetree.states)
 
+import unfolder.select_facetree.states.util
 import unfolder.select_facetree.states.initial_state
 import unfolder.select_facetree.states.add_faces_to_strip
 import unfolder.select_facetree.states.do_nothing
 import unfolder.select_facetree.states.select_face
 import unfolder.select_facetree.states.select_object
+reload(unfolder.select_facetree.states.util)
 reload(unfolder.select_facetree.states.initial_state)
 reload(unfolder.select_facetree.states.add_faces_to_strip)
 reload(unfolder.select_facetree.states.do_nothing)
