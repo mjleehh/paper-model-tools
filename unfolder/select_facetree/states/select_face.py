@@ -3,6 +3,7 @@ import maya.OpenMaya as om
 from unfolder.facetree import Node
 from .add_faces_to_strip import AddFacesToStrip
 from .do_nothing import DoNothing
+from unfolder.select_facetree.states.util import getEventPosition
 
 
 class SelectFace(DoNothing):
@@ -28,8 +29,12 @@ class SelectFace(DoNothing):
             self._waitForInput()
             return self
 
-    def selectionChanged(self):
-        print('root callback')
+    def doPress(self, event):
+        print('root do press')
+
+        pos = getEventPosition(event)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+
         nextState = self._nextState()
         if nextState:
             return self.advance(nextState)

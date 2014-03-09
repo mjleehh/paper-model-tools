@@ -3,6 +3,7 @@ import maya.OpenMaya as om
 from .do_nothing import DoNothing
 from unfolder.create_patch.patch import flattenTree
 from unfolder.create_patch.patch_builder import MeshPatchBuilder
+from unfolder.select_facetree.states.util import getEventPosition
 from unfolder.util.helpers import setIter
 
 
@@ -18,19 +19,17 @@ class AddFacesToStrip(DoNothing):
 
     def init(self):
         print('add faces init')
-        om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
-        om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
-        hiliteList = om.MSelectionList()
-        hiliteList.add(self._dagPath)
-        om.MGlobal.setActiveSelectionList(hiliteList)
-        om.MGlobal.setHiliteList(hiliteList)
         self._updateSelectableFaces()
         self._hightlightSelectableFaces()
         self._context.setHelpString('select faces from strip in order')
         return self
 
-    def selectionChanged(self):
-        print('add faces evaluate')
+    def doPress(self, event):
+        print('add faces do press')
+
+        pos = getEventPosition(event)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
         if not selection.length() is 0:
@@ -40,23 +39,22 @@ class AddFacesToStrip(DoNothing):
             selection.getDagPath(0, dagPath, components)
             faceIter = om.MItMeshPolygon(dagPath, components)
             face = faceIter.index()
-
-            faces = [face]
+            faces = []
             while not faceIter.isDone():
                 faces.append(faceIter.index())
                 faceIter.next()
-            print('selected faces ' + str(faces))
 
             if face in self._selectableFaces:
+                print('current    ' + str(self._currentNode.face))
                 self._currentNode = self._currentNode.addChild(face)
                 self.flatten()
-                self._updateSelectableFaces()
-                print('sel        ' + str(face))
+                print('sel        ' + str(faces))
                 print('selectable ' + str(self._selectableFaces))
                 print("tree       " + str(self._facetree.getFaces()))
+                self._updateSelectableFaces()
         else:
             print('selection was empty')
-        #self._hightlightSelectableFaces()
+        self._hightlightSelectableFaces()
         return self
 
     def flatten(self):
@@ -81,7 +79,11 @@ class AddFacesToStrip(DoNothing):
 
         selection = om.MSelectionList()
         selection.add(self._dagPath, faceComponents.object())
+        print('setting selection')
+        om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
+        om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
         om.MGlobal.setActiveSelectionList(selection)
+        om.MGlobal.setHiliteList(selection)
 
     def _updateSelectableFaces(self):
         print('updateing selectable')
@@ -89,4 +91,8 @@ class AddFacesToStrip(DoNothing):
         setIter(faceIter, self._currentNode.face)
         connectedFaces = om.MIntArray()
         faceIter.getConnectedFaces(connectedFaces)
+        print('determine selectables')
+        print(list(connectedFaces))
+        print(list(self._facetree.getFaces()))
+        print(frozenset(connectedFaces) - frozenset(self._facetree.getFaces()))
         self._selectableFaces = frozenset(connectedFaces) - frozenset(self._facetree.getFaces())

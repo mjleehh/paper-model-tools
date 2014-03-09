@@ -15,8 +15,8 @@ class DoNothing():
         print('advance')
         return nextState.init()
 
-    def selectionChanged(self):
-        print('nothing callback')
+    def doPress(self, event):
+        print('nothing do press')
         return self
 
     def delete(self):

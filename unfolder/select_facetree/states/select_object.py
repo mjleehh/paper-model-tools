@@ -1,6 +1,7 @@
 import maya.OpenMaya as om
 from .do_nothing import DoNothing
 from .select_face import SelectFace
+from unfolder.select_facetree.states.util import getEventPosition
 
 
 class SelectObject(DoNothing):
@@ -11,6 +12,7 @@ class SelectObject(DoNothing):
 
     def init(self):
         print('select init')
+
         nextState = self._nextState()
         if nextState:
             return self.advance(nextState)
@@ -19,8 +21,12 @@ class SelectObject(DoNothing):
             self._waitForInput()
             return self
 
-    def selectionChanged(self):
-        print('select callback')
+    def doPress(self, event):
+        print('select do press')
+
+        pos = getEventPosition(event)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+
         nextState = self._nextState()
         if nextState:
             return self.advance(nextState)
