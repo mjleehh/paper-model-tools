@@ -15,6 +15,7 @@ class Node:
         """
         child = Node(childFace)
         self.children.append(child)
+        child.parent = self
         return child
 
     def remove(self):
