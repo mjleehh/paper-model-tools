@@ -9,15 +9,15 @@ from unfolder.util.helpers import setIter
 
 class AddFacesToStrip(DoNothing):
 
-    def __init__(self, context, dagPath, initialNode, facetree):
+    def __init__(self, context, previous, dagPath, initialNode, facetree):
         print('add faces to strip init')
-        DoNothing.__init__(self, context)
+        DoNothing.__init__(self, context, previous)
         self._dagPath = dagPath
         self._currentNode = initialNode
         self._facetree = facetree
         self._patchBuilder = MeshPatchBuilder()
 
-    def init(self):
+    def ffwd(self):
         print('add faces init')
         self._updateSelectableFaces()
         self._hightlightSelectableFaces()

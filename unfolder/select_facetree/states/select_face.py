@@ -9,8 +9,8 @@ from unfolder.select_facetree.states.util import getEventPosition
 class SelectFace(DoNothing):
     """ Select the root face for the face tree selection tool. """
 
-    def __init__(self, context, dagPath, facetree):
-        DoNothing.__init__(self, context)
+    def __init__(self, context, previous, dagPath, facetree):
+        DoNothing.__init__(self, context, previous)
         self._dagPath = dagPath
         self._dagPath.extendToShape()
         self._facetree = facetree
@@ -19,32 +19,29 @@ class SelectFace(DoNothing):
         else:
             self.selectableFaces = None
 
-    def init(self):
+    def ffwd(self):
         print('root init')
         nextState = self._nextState()
         if nextState:
-            return self.advance(nextState)
+            return nextState()
         else:
-            self._context.setHelpString('select a root face for patch')
-            self._waitForInput()
-            return self
+            return self.reset()
+
+    def reset(self):
+        self._context.setHelpString('select a root face for patch')
+        self._waitForInput()
+        return self
 
     def doPress(self, event):
         print('root do press')
 
         pos = getEventPosition(event)
         om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
-
-        nextState = self._nextState()
-        if nextState:
-            return self.advance(nextState)
-        else:
-            self._waitForInput()
-            return self
+        return self.ffwd()
 
     def delete(self):
         print('root delete')
-        #return SelectObject(self._context)
+        return self._previous()
 
     def complete(self):
         print('root complete')
@@ -53,7 +50,7 @@ class SelectFace(DoNothing):
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('root abort')
-        return DoNothing(self._context)
+        return DoNothing(self._context, None)
 
     def _waitForInput(self):
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
@@ -104,9 +101,9 @@ class SelectFace(DoNothing):
                 if not initialNode:
                     om.MGlobal.displayError('face tree is corrupted')
                     return None
-                return AddFacesToStrip(self._context, self._dagPath, initialNode, self._facetree)
+                return AddFacesToStrip(self._context, self.reset, self._dagPath, initialNode, self._facetree).ffwd
             else:
                 facetree = Node(selectedFace)
-                return AddFacesToStrip(self._context, self._dagPath, facetree, facetree)
+                return AddFacesToStrip(self._context, self.reset, self._dagPath, facetree, facetree).ffwd
         else:
             return None

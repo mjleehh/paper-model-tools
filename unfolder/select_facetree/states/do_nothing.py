@@ -4,16 +4,17 @@ class DoNothing():
         Do nothing on input. When the context has been completed it remains in
         this state.
     """
-    def __init__(self, context):
+    def __init__(self, context, previous):
         self._context = context
+        self._previous = previous
 
-    def init(self):
+    # methods
+
+    def ffwd(self):
         self._context.setHelpString('face tree selection tool done')
         return self
 
-    def advance(self, nextState):
-        print('advance')
-        return nextState.init()
+    # event callbacks
 
     def doPress(self, event):
         print('nothing do press')
