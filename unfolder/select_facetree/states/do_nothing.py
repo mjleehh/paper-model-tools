@@ -19,6 +19,14 @@ class DoNothing():
         print('nothing do press')
         return self
 
+    def doDrag(self, event):
+        print('nothing do drag')
+        return self
+
+    def doRelease(self, event):
+        print('nothing do release')
+        return self
+
     def delete(self):
         print('nothing delete')
         return self
