@@ -29,6 +29,12 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
     def doPress(self, event):
         self._doCallback(self._state.doPress, event)
 
+    def doDrag(self, event):
+        self._doCallback(self._state.doDrag, event)
+
+    def doRelease(self, event):
+        self._doCallback(self._state.doRelease, event)
+
     def completeAction(self):
         """ Complete the tool (enter has been pressed). """
         self._doCallback(self._state.complete)
