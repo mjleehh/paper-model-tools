@@ -47,19 +47,16 @@ class SelectFace(DoNothing):
 
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
-        self._context.unlisten()
         print('root abort')
         return DoNothing(self._context)
 
     def _waitForInput(self):
-        self._context.unlisten()
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
         om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
         hiliteList = om.MSelectionList()
         hiliteList.add(self._dagPath)
         om.MGlobal.setActiveSelectionList(hiliteList)
         om.MGlobal.setHiliteList(hiliteList)
-        self._context.listen()
 
     def _getSelectedFace(self):
         print('advance')
@@ -71,6 +68,7 @@ class SelectFace(DoNothing):
         dagPath = om.MDagPath()
         components = om.MObject()
         selection.getDagPath(0, dagPath, components)
+        dagPath.extendToShape()
 
         if dagPath.node() != self._dagPath.node():
             print('nodes are not the same', dagPath.fullPathName(), self._dagPath.fullPathName())

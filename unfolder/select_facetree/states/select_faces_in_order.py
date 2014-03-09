@@ -25,11 +25,11 @@ class SelectFacesInOrder(DoNothing):
         om.MGlobal.setHiliteList(hiliteList)
         self._selectFaces()
         self._context.setHelpString('Select faces in order')
-        self._context.listen()
+        self._context._listen()
         return self
 
     def selectionChanged(self):
-        self._context.unlisten()
+        self._context._unlisten()
         print('order evaluate')
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
@@ -53,7 +53,7 @@ class SelectFacesInOrder(DoNothing):
             self._selectFaces()
         else:
             print('selection was empty')
-        self._context.listen()
+        self._context._listen()
         return self
 
     def flatten(self):
@@ -62,23 +62,23 @@ class SelectFacesInOrder(DoNothing):
         flattenTree(self._dagPath, tree, self._patchBuilder)
 
     def delete(self):
-        self._context.unlisten()
+        self._context._unlisten()
         if self._faces:
             self._faces.pop()
         self.flatten()
         self._selectFaces()
-        self._context.listen()
+        self._context._listen()
         print('order delete')
         return self
 
     def complete(self):
-        self._context.unlisten()
+        self._context._unlisten()
         self.flatten()
         print('order complete')
         return self.abort()
 
     def abort(self):
-        self._context.unlisten()
+        self._context._unlisten()
         print('order abort')
         return DoNothing(self._context)
 

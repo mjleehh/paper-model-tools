@@ -38,14 +38,11 @@ class SelectObject(DoNothing):
 
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
-        self._context.unlisten()
         print('select abort')
         return DoNothing(self._context).init()
 
     def _waitForInput(self):
-        self._context.unlisten()
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectObjectMode)
-        self._context.listen()
 
     def _nextState(self):
         selection = om.MSelectionList()

@@ -8,13 +8,11 @@ class DoNothing():
         self._context = context
 
     def init(self):
-        self._context.listen()
         self._context.setHelpString('face tree selection tool done')
         return self
 
     def advance(self, nextState):
         print('advance')
-        self._context.unlisten()
         return nextState.init()
 
     def selectionChanged(self):
