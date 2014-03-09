@@ -28,7 +28,7 @@ class AddFacesToStrip(DoNothing):
         print('add faces do press')
 
         pos = getEventPosition(event)
-        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList)
 
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
@@ -72,6 +72,7 @@ class AddFacesToStrip(DoNothing):
 
     def _hightlightSelectableFaces(self):
         print('highlightling')
+        print(self._selectableFaces)
         faceComponents = om.MFnSingleIndexedComponent()
         faceComponents.create(om.MFn.kMeshPolygonComponent)
         for face in self._selectableFaces:
@@ -79,11 +80,13 @@ class AddFacesToStrip(DoNothing):
 
         selection = om.MSelectionList()
         selection.add(self._dagPath, faceComponents.object())
+        hilite = om.MSelectionList()
+        hilite.add(self._dagPath)
         print('setting selection')
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
         om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
         om.MGlobal.setActiveSelectionList(selection)
-        om.MGlobal.setHiliteList(selection)
+        om.MGlobal.setHiliteList(hilite)
 
     def _updateSelectableFaces(self):
         print('updateing selectable')
