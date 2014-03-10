@@ -2,15 +2,16 @@ import maya.OpenMaya as om
 
 from unfolder.facetree import Node
 from .add_faces_to_strip import AddFacesToStrip
+from .state import State
 from .do_nothing import DoNothing
 from unfolder.select_facetree.states.util import getEventPosition
 
 
-class SelectFace(DoNothing):
+class SelectFace(State):
     """ Select the root face for the face tree selection tool. """
 
     def __init__(self, context, previous, dagPath, facetree):
-        DoNothing.__init__(self, context, previous)
+        State.__init__(self, context, previous)
         self._dagPath = dagPath
         self._dagPath.extendToShape()
         self._facetree = facetree
@@ -19,18 +20,7 @@ class SelectFace(DoNothing):
         else:
             self.selectableFaces = None
 
-    def ffwd(self):
-        print('root init')
-        nextState = self._nextState()
-        if nextState:
-            return nextState()
-        else:
-            return self.reset()
-
-    def reset(self):
-        self._context.setHelpString('select a root face for patch')
-        self._waitForInput()
-        return self
+    # event callbacks
 
     def doPress(self, event):
         print('root do press')
@@ -51,6 +41,9 @@ class SelectFace(DoNothing):
         om.MGlobal.displayWarning('Nothing done.')
         print('root abort')
         return DoNothing(self._context, None)
+
+    def _helpString(self):
+        return 'select a root face for patch'
 
     def _waitForInput(self):
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)

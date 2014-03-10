@@ -2,30 +2,18 @@ import maya.OpenMaya as om
 
 from .select_face import SelectFace
 from .do_nothing import DoNothing
+from .state import State
 
 from unfolder.select_facetree.states.util import getEventPosition
 
 
-class SelectObject(DoNothing):
+class SelectObject(State):
     """ Select an object for the face tree selection tool. """
 
     def __init__(self, context):
-        self._context = context
-        self._previous = self.reset
+        State.__init__(self, context, None)
 
-    def ffwd(self):
-        print('select init')
-
-        nextState = self._nextState()
-        if nextState:
-            return nextState()
-        else:
-            return self.reset()
-
-    def reset(self):
-        self._context.setHelpString('select an object to unfold')
-        self._waitForInput()
-        return self
+    # event callbacks
 
     def doPress(self, event):
         print('select do press')
@@ -45,11 +33,16 @@ class SelectObject(DoNothing):
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('select abort')
-        return DoNothing(self._context).ffwd()
+        return DoNothing(self._context, None).ffwd()
+
+    def _helpString(self):
+        return 'select an object to unfold'
 
     def _waitForInput(self):
+        emptySelection = om.MSelectionList()
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectObjectMode)
-        om.MGlobal.setActiveSelectionList(om.MSelectionList())
+        om.MGlobal.setActiveSelectionList(emptySelection)
+        om.MGlobal.setHiliteList(emptySelection)
 
     def _nextState(self):
         selection = om.MSelectionList()

@@ -3,26 +3,21 @@ import maya.OpenMaya as om
 from .do_nothing import DoNothing
 from unfolder.create_patch.patch import flattenTree
 from unfolder.create_patch.patch_builder import MeshPatchBuilder
-from unfolder.select_facetree.states.util import getEventPosition
+from .state import State
+from .util import getEventPosition
 from unfolder.util.helpers import setIter
 
 
-class AddFacesToStrip(DoNothing):
+class AddFacesToStrip(State):
 
     def __init__(self, context, previous, dagPath, initialNode, facetree):
         print('add faces to strip init')
-        DoNothing.__init__(self, context, previous)
+        State.__init__(self, context, previous)
         self._dagPath = dagPath
         self._currentNode = initialNode
         self._facetree = facetree
         self._patchBuilder = MeshPatchBuilder()
 
-    def ffwd(self):
-        print('add faces init')
-        self._updateSelectableFaces()
-        self._hightlightSelectableFaces()
-        self._context.setHelpString('select faces from strip in order')
-        return self
 
     def doPress(self, event):
         print('add faces do press')
@@ -30,6 +25,9 @@ class AddFacesToStrip(DoNothing):
         pos = getEventPosition(event)
         om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList)
 
+        return self.ffwd()
+
+    def _nextState(self):
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
         if not selection.length() is 0:
@@ -61,6 +59,9 @@ class AddFacesToStrip(DoNothing):
         self._patchBuilder.reset()
         flattenTree(self._dagPath, self._facetree, self._patchBuilder)
 
+    def delete(self):
+        return self
+
     def complete(self):
         self.flatten()
         print('order complete')
@@ -69,6 +70,13 @@ class AddFacesToStrip(DoNothing):
     def abort(self):
         print('order abort')
         return DoNothing(self._context)
+
+    def _helpString(self):
+        return 'select faces from strip in order'
+
+    def _waitForInput(self):
+        self._updateSelectableFaces()
+        self._hightlightSelectableFaces()
 
     def _hightlightSelectableFaces(self):
         print('highlightling')
