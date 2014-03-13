@@ -1,5 +1,5 @@
-from .select_object import SelectObject
+import unfolder.select_facetree.states.select_object
 
 
 def createInitialState(context):
-    return SelectObject(context).ffwd()
+    return unfolder.select_facetree.states.select_object.SelectObject(context).ffwd()
