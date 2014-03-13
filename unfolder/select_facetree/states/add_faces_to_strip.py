@@ -1,21 +1,24 @@
 import maya.OpenMaya as om
 
 from .do_nothing import DoNothing
+from .state import State
+from .select_strip_root import SelectStripRoot
+from .util import getEventPosition
+
 from unfolder.create_patch.patch import flattenTree
 from unfolder.create_patch.patch_builder import MeshPatchBuilder
-from .state import State
-from .util import getEventPosition
 from unfolder.util.helpers import setIter
 
 
 class AddFacesToStrip(State):
 
-    def __init__(self, context, previous, dagPath, initialNode, facetree):
+    def __init__(self, context, previous, dagPath, initialNode):
         print('add faces to strip init')
         State.__init__(self, context, previous)
         self._dagPath = dagPath
         self._currentNode = initialNode
-        self._facetree = facetree
+        self._facetree = initialNode
+        self._updateSelectableFaces()
         self._patchBuilder = MeshPatchBuilder()
 
 
@@ -53,7 +56,7 @@ class AddFacesToStrip(State):
         else:
             print('selection was empty')
         self._hightlightSelectableFaces()
-        return self
+        return lambda: self
 
     def flatten(self):
         self._patchBuilder.reset()
@@ -63,9 +66,8 @@ class AddFacesToStrip(State):
         return self
 
     def complete(self):
-        self.flatten()
         print('order complete')
-        return self.abort()
+        return SelectStripRoot(self._context, None, self._dagPath, self._facetree)
 
     def abort(self):
         print('order abort')
