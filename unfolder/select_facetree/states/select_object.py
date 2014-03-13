@@ -1,6 +1,6 @@
 import maya.OpenMaya as om
 
-from .select_face import SelectFace
+from .select_initial_face import SelectInitialFace
 from .do_nothing import DoNothing
 from .state import State
 
@@ -33,7 +33,7 @@ class SelectObject(State):
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('select abort')
-        return DoNothing(self._context, None).ffwd()
+        return DoNothing(self._context).ffwd()
 
     def _helpString(self):
         return 'select an object to unfold'
@@ -52,7 +52,7 @@ class SelectObject(State):
             dagPath = om.MDagPath()
             selection.getDagPath(0, dagPath)
             print(dagPath.fullPathName())
-            return SelectFace(self._context, self.reset, dagPath, None).ffwd
+            return SelectInitialFace(self._context, self.reset, dagPath).ffwd
         else:
             return None
 
