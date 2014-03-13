@@ -45,15 +45,17 @@ import unfolder.select_facetree.states.state
 import unfolder.select_facetree.states.initial_state
 import unfolder.select_facetree.states.add_faces_to_strip
 import unfolder.select_facetree.states.do_nothing
-import unfolder.select_facetree.states.select_face
+import unfolder.select_facetree.states.select_initial_face
 import unfolder.select_facetree.states.select_object
+import unfolder.select_facetree.states.select_strip_root
 reload(unfolder.select_facetree.states.util)
 reload(unfolder.select_facetree.states.state)
 reload(unfolder.select_facetree.states.initial_state)
 reload(unfolder.select_facetree.states.add_faces_to_strip)
 reload(unfolder.select_facetree.states.do_nothing)
-reload(unfolder.select_facetree.states.select_face)
+reload(unfolder.select_facetree.states.select_initial_face)
 reload(unfolder.select_facetree.states.select_object)
+reload(unfolder.select_facetree.states.select_strip_root)
 
 import unfolder.util
 reload(unfolder.util)
