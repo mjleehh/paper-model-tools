@@ -1,4 +1,4 @@
-class State:
+class State(object):
     def __init__(self, context, previous):
         self._context = context
         self._previous = previous
