@@ -7,18 +7,13 @@ from .do_nothing import DoNothing
 from unfolder.select_facetree.states.util import getEventPosition
 
 
-class SelectFace(State):
+class SelectInitialFace(State):
     """ Select the root face for the face tree selection tool. """
 
-    def __init__(self, context, previous, dagPath, facetree):
+    def __init__(self, context, previous, dagPath):
         State.__init__(self, context, previous)
         self._dagPath = dagPath
         self._dagPath.extendToShape()
-        self._facetree = facetree
-        if facetree:
-            self.selectableFaces = facetree.getFaces()
-        else:
-            self.selectableFaces = None
 
     # event callbacks
 
@@ -33,10 +28,6 @@ class SelectFace(State):
         print('root delete')
         return self._previous()
 
-    def complete(self):
-        print('root complete')
-        return self.abort()
-
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('root abort')
@@ -46,12 +37,23 @@ class SelectFace(State):
         return 'select a root face for patch'
 
     def _waitForInput(self):
+        faceComponents = om.MFnSingleIndexedComponent()
+        faceComponents.create(om.MFn.kMeshPolygonComponent)
+
+        selection = om.MSelectionList()
+        selection.add(self._dagPath)
+
         om.MGlobal.setSelectionMode(om.MGlobal.kSelectComponentMode)
         om.MGlobal.setComponentSelectionMask(om.MSelectionMask(om.MSelectionMask.kSelectMeshFaces))
-        hiliteList = om.MSelectionList()
-        hiliteList.add(self._dagPath)
-        om.MGlobal.setActiveSelectionList(hiliteList)
-        om.MGlobal.setHiliteList(hiliteList)
+        om.MGlobal.setActiveSelectionList(selection)
+        om.MGlobal.setHiliteList(selection)
+
+    def _nextState(self):
+        selectedFace = self._getSelectedFace()
+        if selectedFace:
+            return AddFacesToStrip(self._context, self.reset, self._dagPath, Node(selectedFace)).ffwd
+        else:
+            return None
 
     def _getSelectedFace(self):
         print('advance')
@@ -82,21 +84,4 @@ class SelectFace(State):
             om.MGlobal.displayWarning('more than one face selected at once')
 
         face = faceIter.index()
-        if self.selectableFaces and face not in self.selectableFaces:
-            return None
         return face
-
-    def _nextState(self):
-        selectedFace = self._getSelectedFace()
-        if selectedFace:
-            if self._facetree:
-                initialNode = self._facetree.findSubtree(selectedFace)
-                if not initialNode:
-                    om.MGlobal.displayError('face tree is corrupted')
-                    return None
-                return AddFacesToStrip(self._context, self.reset, self._dagPath, initialNode, self._facetree).ffwd
-            else:
-                facetree = Node(selectedFace)
-                return AddFacesToStrip(self._context, self.reset, self._dagPath, facetree, facetree).ffwd
-        else:
-            return None
