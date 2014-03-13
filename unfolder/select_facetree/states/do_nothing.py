@@ -1,12 +1,15 @@
 from .state import State
 
 
-class DoNothing(State):
+class DoNothing:
     """ Final state of the face tree selection tool.
 
         Do nothing on input. When the context has been completed it remains in
         this state.
     """
+
+    def __init__(self, context):
+        self._context = context
 
     # methods
 
