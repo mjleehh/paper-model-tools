@@ -1,6 +1,6 @@
 class State(object):
-    def __init__(self, context, previous):
-        self._context = context
+    def __init__(self, stateFactory, previous):
+        self._stateFactory = stateFactory
         self._previous = previous
 
     # methods
@@ -13,7 +13,7 @@ class State(object):
             return self.reset()
 
     def reset(self):
-        self._context.setHelpString(self._helpString())
+#        self._context.setHelpString(self._helpString())
         self._waitForInput()
         return self
 
