@@ -1,7 +1,5 @@
 import maya.OpenMaya as om
 
-from .select_initial_face import SelectInitialFace
-from .do_nothing import DoNothing
 from .state import State
 
 from unfolder.select_facetree.states.util import getEventPosition
@@ -10,8 +8,8 @@ from unfolder.select_facetree.states.util import getEventPosition
 class SelectObject(State):
     """ Select an object for the face tree selection tool. """
 
-    def __init__(self, context):
-        State.__init__(self, context, None)
+    def __init__(self, stateFactory):
+        State.__init__(self, stateFactory, None)
 
     # event callbacks
 
@@ -33,7 +31,7 @@ class SelectObject(State):
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('select abort')
-        return DoNothing(self._context).ffwd()
+        return self._stateFactory.doNoting()()
 
     def _helpString(self):
         return 'select an object to unfold'
@@ -52,7 +50,7 @@ class SelectObject(State):
             dagPath = om.MDagPath()
             selection.getDagPath(0, dagPath)
             print(dagPath.fullPathName())
-            return SelectInitialFace(self._context, self.reset, dagPath).ffwd
+            return self._stateFactory.selectInitialFace(self.reset, dagPath)
         else:
             return None
 

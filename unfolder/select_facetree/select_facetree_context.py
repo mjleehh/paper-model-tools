@@ -2,11 +2,11 @@ import maya.OpenMaya as om
 import maya.OpenMayaMPx as omp
 
 from unfolder.util.selection import Selection
-from .states.initial_state import createInitialState
 
 class SelectFacetreeContext(omp.MPxSelectionContext):
-    def __init__(self):
+    def __init__(self, stateFactory):
         omp.MPxSelectionContext.__init__(self)
+        self._stateFactory = stateFactory
         self._state = None
         self._callback = None
         self._listening = False
@@ -16,7 +16,8 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
         """ Called each time the context is activated. """
         print('setting up tool')
         self._selection = Selection()
-        self._state = createInitialState(self)
+        self._state = self._stateFactory.initialState()
+        self._state = self._state()
 
     def toolOffCleanup(self):
         """ Called each time the context is deactivated. """

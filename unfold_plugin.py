@@ -1,7 +1,8 @@
-import maya.OpenMayaMPx as omp
 import sys
 
+import maya.OpenMayaMPx as omp
 from unfolder.select_facetree.select_facetree_context import SelectFacetreeContext
+from unfolder.select_facetree.state_factory import StateFactory
 
 
 class FacetreeSelectionCommand(omp.MPxContextCommand):
@@ -9,7 +10,7 @@ class FacetreeSelectionCommand(omp.MPxContextCommand):
         omp.MPxContextCommand.__init__(self)
 
     def makeObj(self):
-        return omp.asMPxPtr(SelectFacetreeContext())
+        return omp.asMPxPtr(SelectFacetreeContext(StateFactory()))
 
 
 # Creator

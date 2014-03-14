@@ -8,15 +8,6 @@ class DoNothing:
         this state.
     """
 
-    def __init__(self, context):
-        self._context = context
-
-    # methods
-
-    def ffwd(self):
-        self._context.setHelpString('face tree selection tool done')
-        return self
-
     # event callbacks
 
     def doPress(self, event):

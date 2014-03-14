@@ -1,17 +1,19 @@
 import maya.OpenMaya as om
 
-from unfolder.facetree import Node
 from .add_faces_to_strip import AddFacesToStrip
 from .state import State
 from .do_nothing import DoNothing
+from unfolder.create_patch.patch_builder import MeshPatchBuilder
+
+from unfolder.facetree import Node
 from unfolder.select_facetree.states.util import getEventPosition
 
 
 class SelectInitialFace(State):
     """ Select the root face for the face tree selection tool. """
 
-    def __init__(self, context, previous, dagPath):
-        State.__init__(self, context, previous)
+    def __init__(self, stateFactory, previous, dagPath):
+        State.__init__(self, stateFactory, previous)
         self._dagPath = dagPath
         self._dagPath.extendToShape()
 
@@ -31,7 +33,7 @@ class SelectInitialFace(State):
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         print('root abort')
-        return DoNothing(self._context, None)
+        return self._stateFactory.doNothing()()
 
     def _helpString(self):
         return 'select a root face for patch'
@@ -51,7 +53,7 @@ class SelectInitialFace(State):
     def _nextState(self):
         selectedFace = self._getSelectedFace()
         if selectedFace:
-            return AddFacesToStrip(self._context, self.reset, self._dagPath, Node(selectedFace)).ffwd
+            return self._stateFactory.addFacesToStrip(self.reset, self._dagPath, MeshPatchBuilder(), Node(selectedFace))
         else:
             return None
 

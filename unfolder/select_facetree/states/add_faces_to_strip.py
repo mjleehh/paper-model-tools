@@ -2,25 +2,26 @@ import maya.OpenMaya as om
 
 from .do_nothing import DoNothing
 from .state import State
-from .select_strip_root import SelectStripRoot
 from .util import getEventPosition
 
 from unfolder.create_patch.patch import flattenTree
-from unfolder.create_patch.patch_builder import MeshPatchBuilder
 from unfolder.util.helpers import setIter
 
 
 class AddFacesToStrip(State):
 
-    def __init__(self, context, previous, dagPath, initialNode):
+    def __init__(self, stateFactory, previous, dagPath, patchBuilder, stripRoot):
         print('add faces to strip init')
-        State.__init__(self, context, previous)
+        State.__init__(self, stateFactory, previous)
         self._dagPath = dagPath
-        self._currentNode = initialNode
-        self._facetree = initialNode
+        self._currentNode = stripRoot
+        self._facetree = stripRoot.getRoot()
         self._updateSelectableFaces()
-        self._patchBuilder = MeshPatchBuilder()
+        self._patchBuilder = patchBuilder
 
+    def ffwd(self):
+        self._waitForInput()
+        return self
 
     def doPress(self, event):
         print('add faces do press')
@@ -28,9 +29,9 @@ class AddFacesToStrip(State):
         pos = getEventPosition(event)
         om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList)
 
-        return self.ffwd()
+        return self._handleSelection()
 
-    def _nextState(self):
+    def _handleSelection(self):
         selection = om.MSelectionList()
         om.MGlobal.getActiveSelectionList(selection)
         if not selection.length() is 0:
@@ -56,7 +57,7 @@ class AddFacesToStrip(State):
         else:
             print('selection was empty')
         self._hightlightSelectableFaces()
-        return lambda: self
+        return self
 
     def flatten(self):
         self._patchBuilder.reset()
@@ -67,7 +68,7 @@ class AddFacesToStrip(State):
 
     def complete(self):
         print('order complete')
-        return SelectStripRoot(self._context, None, self._dagPath, self._facetree)
+        return self._stateFactory.selectStripRoot(None, self._dagPath, self._patchBuilder, self._facetree)()
 
     def abort(self):
         print('order abort')
