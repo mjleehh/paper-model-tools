@@ -35,17 +35,22 @@ class Node:
             faces.extend(child.getFaces())
         return faces
 
+    def getRoot(self):
+        if self.parent:
+            return self.parent.getRoot()
+        else:
+            return self
+
     def findSubtree(self, rootValue):
         """ Find the node in the tree that matches a certain face.
         """
-        if self.value == rootValue:
+        if self.face == rootValue:
             return self
         for child in self.children:
             subtree = child.findSubtree(rootValue)
             if subtree:
                 return subtree
         return None
-
 
     def sf(self, offset = 0):
         """ Debuging output of a face tree.
