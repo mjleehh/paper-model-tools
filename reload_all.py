@@ -18,8 +18,10 @@ reload(unfolder.analyze_patch.papersize)
 import unfolder.automatic_unfold
 reload(unfolder.automatic_unfold)
 
+import unfolder.automatic_unfold.create_paper_model_command
 import unfolder.automatic_unfold.generate_facetree
 import unfolder.automatic_unfold.selected_faces
+reload(unfolder.automatic_unfold.create_paper_model_command)
 reload(unfolder.automatic_unfold.generate_facetree)
 reload(unfolder.automatic_unfold.selected_faces)
 
@@ -34,8 +36,10 @@ reload(unfolder.create_patch.patch_builder)
 import unfolder.select_facetree
 reload(unfolder.select_facetree)
 
+import unfolder.select_facetree.create_paper_model_tool
 import unfolder.select_facetree.select_facetree_context
 import unfolder.select_facetree.state_factory
+reload(unfolder.select_facetree.create_paper_model_tool)
 reload(unfolder.select_facetree.select_facetree_context)
 reload(unfolder.select_facetree.state_factory)
 
