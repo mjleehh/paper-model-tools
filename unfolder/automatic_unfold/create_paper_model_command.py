@@ -1,0 +1,49 @@
+import maya.OpenMayaMPx as omp
+import maya.OpenMaya as om
+
+from unfolder.create_patch.patch import flattenTree
+from unfolder.create_patch.patch_builder import MeshPatchBuilder
+
+from .generate_facetree import createFacetreeSpiral, createFacetreeLightning
+from .selected_faces import findConnectedFaces
+
+
+class CreatePaperModelCommand(omp.MPxCommand):
+    def ___init__(self):
+        omp.MPxCommand.__init__(self)
+
+    def doIt(self, argList):
+        self._flattenMesh()
+
+    def _flattenMesh(self, strategy = None):
+        """ Unfold mesh selection."""
+        print("flattening selection")
+
+        activeSelection = om.MSelectionList()
+        om.MGlobal.getActiveSelectionList(activeSelection)
+
+        selectedObjects = om.MItSelectionList(activeSelection, om.MFn.kMesh)
+        self._flattenObjectsInSelectionList(selectedObjects, strategy)
+
+        objectsWithSelectedFaces = om.MItSelectionList(activeSelection, om.MFn.kMeshPolygonComponent)
+        self._flattenObjectsInSelectionList(objectsWithSelectedFaces, strategy)
+
+        print('flattening selection ... done')
+
+    def _flattenObjectsInSelectionList(self, selectionListIter, strategy):
+        while not selectionListIter.isDone():
+            dagPath = om.MDagPath()
+            components = om.MObject()
+            selectionListIter.getDagPath(dagPath, components)
+            print('flattening selection on object %(object)s' % {'object': dagPath.partialPathName()})
+
+            connectedFaceSets = findConnectedFaces(dagPath, components)
+            for connectedFaceSet in connectedFaceSets:
+                if strategy is 'spiral':
+                    tree = createFacetreeSpiral(dagPath, connectedFaceSet)
+                else:
+                    tree = createFacetreeLightning(dagPath, connectedFaceSet)
+                patchBuilder = MeshPatchBuilder()
+                flattenTree(dagPath, tree, patchBuilder)
+            selectionListIter.next()
+            print('flattening faces for selected object ... done')

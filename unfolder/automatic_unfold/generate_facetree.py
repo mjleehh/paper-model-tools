@@ -26,7 +26,9 @@ def createFacetreeLightning(dagPath, connectedFaces):
             setIter(faceIter, connectedFace)
             children.append(extractConnectedFaces(faceIter, remainingFaces))
 
-        return Node(face, children)
+        node = Node(face)
+        node.children = children
+        return node
 
     print("duplicating patch")
     initialFace = connectedFaces[0]
@@ -62,12 +64,12 @@ def createFacetreeSpiral(dagPath, connectedFaces):
         remainingFaces -= neighbours
 
         for connectedFace in neighbours:
-            node.addChild(connectedFace, [])
+            node.addChild(connectedFace)
 
     print("duplicating patch")
     initialFace = connectedFaces[0]
     remainingFaces = set(connectedFaces[1:])
-    tree = Node(initialFace, [])
+    tree = Node(initialFace)
     while remainingFaces:
         traverseTreeStub(tree, remainingFaces)
     print("duplicating patch ... done")
@@ -105,7 +107,7 @@ def createFacetreeSelectionOrder(dagPath, orderedSelectedFaces):
     print("duplicating patch")
     initialFace = orderedSelectedFaces[0]
     remainingFaces = orderedSelectedFaces[1:]
-    tree = Node(initialFace, [])
+    tree = Node(initialFace)
     while remainingFaces:
         addNextFaceStripToSubtree(tree, remainingFaces)
     print("duplicating patch ... done")
