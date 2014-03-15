@@ -1,25 +1,20 @@
+import maya.OpenMayaMPx as omp
 import sys
 
-import maya.OpenMayaMPx as omp
-from unfolder.select_facetree.select_facetree_context import SelectFacetreeContext
-from unfolder.select_facetree.state_factory import StateFactory
+from unfolder.automatic_unfold.create_paper_model_command import CreatePaperModelCommand
+from unfolder.select_facetree.create_paper_model_tool import CreatePaperModelTool
 
 
-class FacetreeSelectionCommand(omp.MPxContextCommand):
-    def __init__(self):
-        omp.MPxContextCommand.__init__(self)
-        print('constructed')
+def createToolCommand():
+    return omp.asMPxPtr(CreatePaperModelTool())
 
-    def makeObj(self):
-        print('created')
-        return omp.asMPxPtr(SelectFacetreeContext(StateFactory()))
 
-# Creator
 def createCommand():
-    return omp.asMPxPtr(FacetreeSelectionCommand())
+    return omp.asMPxPtr(CreatePaperModelCommand())
 
 
-kPluginCmdName = "selectFacetree"
+kToolCommandName = "createPaperModelTool"
+kCommandName = "createPaperModel"
 
 
 # Initialize the script plug-in
@@ -30,9 +25,10 @@ def initializePlugin(mobject):
     mplugin.setName('Paper Model Tools')
 
     try:
-        mplugin.registerContextCommand(kPluginCmdName, createCommand)
+        mplugin.registerContextCommand(kToolCommandName, createToolCommand)
+        mplugin.registerCommand(kCommandName, createCommand)
     except:
-        sys.stderr.write("Failed to register command: %s\n" % kPluginCmdName)
+        sys.stderr.write('Failed to register commands')
         raise
 
 
@@ -42,6 +38,7 @@ def uninitializePlugin(mobject):
 
     mplugin = omp.MFnPlugin(mobject)
     try:
-        mplugin.deregisterContextCommand(kPluginCmdName)
+        mplugin.deregisterContextCommand(kToolCommandName)
+        mplugin.deregisterCommand(kCommandName)
     except:
-        sys.stderr.write("Failed to unregister command: %s\n" % kPluginCmdName)
+        sys.stderr.write('Failed to unregister commands')
