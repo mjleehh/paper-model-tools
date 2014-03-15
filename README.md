@@ -37,7 +37,7 @@ Create Paper Model Tool
 This interactive tool lets the user create a paper model from a mesh geometry
 controlling the layout of that paper model.
 
-### Single Stip Paper Model ###
+### Single Strip Paper Model ###
 
 We want to convert the following geometry to a paper model:
 
@@ -49,22 +49,38 @@ We want to convert the following geometry to a paper model:
 
 * Now the object is highlighted and we can select the first face:
 
-![step 1](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/step_01.png)
+![step 1](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/step_01.png)
 
 * The first section of the paper model has been created from the selected face.
 Those faces directly connected to the face are highlighted. These faces can be
 selected next. Select the face *above* the current one:
 
-![step 2](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/step_02.png)
+![step 2](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/step_02.png)
 
 * The face has been added to the paper model and the next selection options are
 highlighted. Now continue selecting faces in the following order:
 
-![selection order](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/selection_order.png)
+![selection order](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/selection_order.png)
 
 * Finally you end up with a paper model of the whole geometry:
 
-![result](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/done.png)
+![result](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/done.png)
+
+### Paper Model with multiple Strips ###
+
+The paper model in the previous does represent the original geometry, but for
+tree reasons creating a paper model as a single strip doesn't suffice:
+1. The resulting model may be tedious to cut or waste large amounts of paper.
+2. It may be that the single strip version of the model has overlapping surfaces
+whereas other solutions to the problem do not. Thus you do not want to be
+limited to single strip paper models.
+3. Not all geometry may can be represented as a single strip model.
+
+Below we have the example of the single strip paper model from the previous
+section (left) and a paper model consisting of multiple strips that we want to
+create in this section.
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/comparison.png)
 
 Create Paper Model Command
 --------------------------
