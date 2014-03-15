@@ -22,6 +22,6 @@ pick
 
 Now at the bottom of the list you should see
 
-![loaded plugin in plug-in browser]("doc/images/plugin_loaded.png")
+![loaded plugin in plug-in browser]("https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/plugin_loaded.png")
 
 
