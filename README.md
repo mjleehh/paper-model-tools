@@ -37,32 +37,40 @@ Create Paper Model Tool
 This interactive tool lets the user create a paper model from a mesh geometry
 controlling the layout of that paper model.
 
+Currently the Create Paper Model Tool does not have any gui integration. Thus
+to run the tool run the following python commands:
+
+```python
+createPaperModelTool = maya.cmds.createPaperModelTool()
+maya.cmds.setToolTo(createPaperModelTool)
+```
+
 ### Single Strip Paper Model ###
 
 We want to convert the following geometry to a paper model:
 
 ![to be converted](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/initial.png)
 
-* Select the `Create Paper Model Tool` and click on the object:
+Select the `Create Paper Model Tool` and click on the object:
 
 ![selected](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/selected.png)
 
-* Now the object is highlighted and we can select the first face:
+Now the object is highlighted and we can select the first face:
 
 ![step 1](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/step_01.png)
 
-* The first section of the paper model has been created from the selected face.
+The first section of the paper model has been created from the selected face.
 Those faces directly connected to the face are highlighted. These faces can be
 selected next. Select the face *above* the current one:
 
 ![step 2](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/step_02.png)
 
-* The face has been added to the paper model and the next selection options are
+The face has been added to the paper model and the next selection options are
 highlighted. Now continue selecting faces in the following order:
 
 ![selection order](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/selection_order.png)
 
-* Finally you end up with a paper model of the whole geometry:
+Finally you end up with a paper model of the whole geometry:
 
 ![result](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/one-strip/done.png)
 
@@ -83,36 +91,36 @@ create in this section.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/comparison.png)
 
-* Using the Create Paper Model Tool select the first strip by clicking the faces
+Using the Create Paper Model Tool select the first strip by clicking the faces
 in the following order:
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/selection_order_strip_1.png)
 
-* The result is:
+The result is:
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_04.png)
 
-* To start a new strip starting with a face allready part of the paper model,
+To start a new strip starting with a face allready part of the paper model,
 press enter. All faces that are part of the paper model so far are highlighted
 for selection.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_05.png)
 
-* Select the *mid top* face.
+Select the *mid top* face.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_06.png)
 
-* Now you can select the neighbouring face that is not yet part of the paper
+Now you can select the neighbouring face that is not yet part of the paper
 model.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_07.png)
 
-* Now click the faces in the following order. Before clicking faces that have a
+Click the faces in the following order. Before clicking faces that have a
 plus in their selection order press enter.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/selection_order_rest.png)
 
-* The final result:
+The final result:
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/done.png)
 
@@ -122,6 +130,12 @@ Create Paper Model Command
 
 This tool given a selected mesh object or a set of mesh faces generates a paper
 model for that selection.
+
+To run the Create Paper Model command run:
+
+```python
+maya.cmds.createPaperModel()
+```
 
 Copyright and License
 ---------------------
