@@ -70,6 +70,7 @@ highlighted. Now continue selecting faces in the following order:
 
 The paper model in the previous does represent the original geometry, but for
 tree reasons creating a paper model as a single strip doesn't suffice:
+
 1. The resulting model may be tedious to cut or waste large amounts of paper.
 2. It may be that the single strip version of the model has overlapping surfaces
 whereas other solutions to the problem do not. Thus you do not want to be
@@ -91,4 +92,5 @@ model for that selection.
 Copyright and License
 ---------------------
 
-Paper Model Tools is released under the [GPL V3](http://choosealicense.com/licenses/gpl-v3/).
+Copyright for Paper Model Tools *Michael Jonathan Lee*. Paper Model Tools is
+released under the [GPL V3](http://choosealicense.com/licenses/gpl-v3/).
