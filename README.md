@@ -137,6 +137,26 @@ To run the Create Paper Model command run:
 maya.cmds.createPaperModel()
 ```
 
+### Paper Model from whole Object ###
+
+To automatically generate a paper model from a whole object select the object
+
+![selected object](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-command/object_selected.png)
+
+and run the `Create Paper Model` command:
+
+![selected object](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-command/object_done.png)
+
+### Paper Model for some Faces ###
+
+To create a paper model only for certain faces on the object select these faces
+
+![selected object](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-command/faces_selected.png)
+
+and run the `Create Paper Model` command:
+
+![selected object](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-command/faces_done.png)
+
 Copyright and License
 ---------------------
 
