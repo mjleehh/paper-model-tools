@@ -37,6 +37,35 @@ Create Paper Model Tool
 This interactive tool lets the user create a paper model from a mesh geometry
 controlling the layout of that paper model.
 
+### Single Stip Paper Model ###
+
+We want to convert the following geometry to a paper model:
+
+![to be converted](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/initial.png)
+
+* Select the `Create Paper Model Tool` and click on the object:
+
+![selected](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/selected.png)
+
+* Now the object is highlighted and we can select the first face:
+
+![step 1](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/step_01.png)
+
+* The first section of the paper model has been created from the selected face.
+Those faces directly connected to the face are highlighted. These faces can be
+selected next. Select the face *above* the current one:
+
+![step 2](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/step_02.png)
+
+* The face has been added to the paper model and the next selection options are
+highlighted. Now continue selecting faces in the following order:
+
+![selection order](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/selection_order.png)
+
+* Finally you end up with a paper model of the whole geometry:
+
+![result](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/done.png)
+
 Create Paper Model Command
 --------------------------
 
