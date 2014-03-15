@@ -51,12 +51,3 @@ class Node:
             if subtree:
                 return subtree
         return None
-
-    def sf(self, offset = 0):
-        """ Debuging output of a face tree.
-        """
-        res = " " * offset + str(self.face) + '\n'
-        for child in self.children:
-            res += child.sf(offset + 1)
-        return res
-
