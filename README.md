@@ -4,6 +4,11 @@ Paper Model Tools
 The Paper Model Tools is a set of tools to create 2D paper model sheets from 3D
 mesh geometry. They are currently implemented as a plugin for Autodesk Maya.
 
+![showcase](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/showcase.png)
+
+Two objects and paper models of these objects that were created using the Paper
+Model Tools.
+
 Installation
 ------------
 
@@ -24,4 +29,21 @@ Now at the bottom of the list you should see
 
 ![loaded plugin in plug-in browser](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/plugin_loaded.png)
 
+If you wish to load the plugin on startup check the `Auto load` box.
 
+Create Paper Model Tool
+-----------------------
+
+This interactive tool lets the user create a paper model from a mesh geometry
+controlling the layout of that paper model.
+
+Create Paper Model Command
+--------------------------
+
+This tool given a selected mesh object or a set of mesh faces generates a paper
+model for that selection.
+
+Copyright and License
+---------------------
+
+Paper Model Tools is released under the [GPL V3](http://choosealicense.com/licenses/gpl-v3/).
