@@ -83,6 +83,40 @@ create in this section.
 
 ![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/comparison.png)
 
+* Using the Create Paper Model Tool select the first strip by clicking the faces
+in the following order:
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/selection_order_strip_1.png)
+
+* The result is:
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_04.png)
+
+* To start a new strip starting with a face allready part of the paper model,
+press enter. All faces that are part of the paper model so far are highlighted
+for selection.
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_05.png)
+
+* Select the *mid top* face.
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_06.png)
+
+* Now you can select the neighbouring face that is not yet part of the paper
+model.
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/step_07.png)
+
+* Now click the faces in the following order. Before clicking faces that have a
+plus in their selection order press enter.
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/selection_order_rest.png)
+
+* The final result:
+
+![comparison](https://raw.github.com/mjleehh/paper-model-tools/master/doc/images/create-paper-model-tool/multiple-strips/done.png)
+
+
 Create Paper Model Command
 --------------------------
 
