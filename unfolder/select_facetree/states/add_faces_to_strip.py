@@ -19,6 +19,24 @@ class AddFacesToStrip(State):
         self._updateSelectableFaces()
         self._patchBuilder = patchBuilder
 
+    # event callbacks
+
+    def delete(self):
+        return self
+
+    def complete(self):
+        print('order complete')
+        return self._stateFactory.selectStripRoot(None, self._dagPath, self._patchBuilder, self._facetree)()
+
+    def abort(self):
+        print('order abort')
+        return DoNothing()
+
+    # advance
+
+    def _helpString(self):
+        return 'select faces from strip in order'
+
     def ffwd(self):
         self._waitForInput()
         return self
@@ -56,20 +74,6 @@ class AddFacesToStrip(State):
     def flatten(self):
         self._patchBuilder.reset()
         flattenTree(self._dagPath, self._facetree, self._patchBuilder)
-
-    def delete(self):
-        return self
-
-    def complete(self):
-        print('order complete')
-        return self._stateFactory.selectStripRoot(None, self._dagPath, self._patchBuilder, self._facetree)()
-
-    def abort(self):
-        print('order abort')
-        return DoNothing(self._context)
-
-    def _helpString(self):
-        return 'select faces from strip in order'
 
     def _waitForInput(self):
         self._updateSelectableFaces()

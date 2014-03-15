@@ -19,13 +19,6 @@ class SelectInitialFace(State):
 
     # event callbacks
 
-    def doPress(self, event):
-        print('root do press')
-
-        pos = getEventPosition(event)
-        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
-        return self.ffwd()
-
     def delete(self):
         print('root delete')
         return self._previous()
@@ -37,6 +30,14 @@ class SelectInitialFace(State):
 
     def _helpString(self):
         return 'select a root face for patch'
+
+    # advance
+
+    def doPress(self, event):
+        print('root do press')
+        pos = getEventPosition(event)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+        return self.ffwd()
 
     def _waitForInput(self):
         faceComponents = om.MFnSingleIndexedComponent()

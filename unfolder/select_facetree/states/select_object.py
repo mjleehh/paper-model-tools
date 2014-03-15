@@ -13,13 +13,6 @@ class SelectObject(State):
 
     # event callbacks
 
-    def doPress(self, event):
-        print('select do press')
-
-        pos = getEventPosition(event)
-        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
-        return self.ffwd()
-
     def delete(self):
         print('select delete')
         return self.abort()
@@ -35,6 +28,14 @@ class SelectObject(State):
 
     def _helpString(self):
         return 'select an object to unfold'
+
+    # advance
+
+    def doPress(self, event):
+        print('select do press')
+        pos = getEventPosition(event)
+        om.MGlobal.selectFromScreen(pos[0], pos[1], om.MGlobal.kReplaceList, om.MGlobal.kSurfaceSelectMethod)
+        return self.ffwd()
 
     def _waitForInput(self):
         emptySelection = om.MSelectionList()
