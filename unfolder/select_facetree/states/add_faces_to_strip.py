@@ -47,16 +47,10 @@ class AddFacesToStrip(State):
                 faceIter.next()
 
             if face in self._selectableFaces:
-                print('current    ' + str(self._currentNode.face))
                 self._currentNode = self._currentNode.addChild(face)
-                self.flatten()
-                print('sel        ' + str(faces))
-                print('selectable ' + str(self._selectableFaces))
-                print("tree       " + str(self._facetree.getFaces()))
-                self._updateSelectableFaces()
         else:
             print('selection was empty')
-        self._hightlightSelectableFaces()
+        self._waitForInput()
         return self
 
     def flatten(self):
@@ -80,6 +74,7 @@ class AddFacesToStrip(State):
     def _waitForInput(self):
         self._updateSelectableFaces()
         self._hightlightSelectableFaces()
+        self.flatten()
 
     def _hightlightSelectableFaces(self):
         print('highlightling')
