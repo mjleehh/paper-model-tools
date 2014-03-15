@@ -3,7 +3,7 @@
 try:
 	reload(reload_all)
 	maya.cmds.deleteUI(facetreeToolContext, toolContext = True);
-	maya.cmds.unloadPlugin('unfold_plugin.py')
+	maya.cmds.unloadPlugin('paper_model_tools_plugin.py')
 
 except NameError:
 	import sys
@@ -11,6 +11,6 @@ except NameError:
 		sys.path.append('u:/modules/')	
 	import reload_all
 
-maya.cmds.loadPlugin('u:/modules/unfold_plugin.py')
+maya.cmds.loadPlugin('u:/modules/paper_model_tools_plugin.py')
 facetreeToolContext = maya.cmds.selectFacetree()
 maya.cmds.setToolTo(facetreeToolContext)
