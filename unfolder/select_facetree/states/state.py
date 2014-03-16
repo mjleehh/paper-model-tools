@@ -13,7 +13,6 @@ class State(object):
             return self.reset()
 
     def reset(self):
-#        self._context.setHelpString(self._helpString())
         self._waitForInput()
         return self
 
