@@ -56,6 +56,8 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
         print('selection changed context')
         self._doCallback(self._state.selectionChanged)
 
+    # private
+
     def _doCallback(self, f, *args):
         self._state = f(*args)
         self._setHelpString(self._state.helpString())
