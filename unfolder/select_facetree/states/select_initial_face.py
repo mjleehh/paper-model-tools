@@ -23,9 +23,6 @@ class SelectInitialFace(State):
 
     # event callbacks
 
-    def delete(self):
-        return self._previous()
-
     def abort(self):
         om.MGlobal.displayWarning('Nothing done.')
         return self._stateFactory.doNothing()()

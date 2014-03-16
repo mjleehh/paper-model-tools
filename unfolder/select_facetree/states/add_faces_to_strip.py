@@ -24,7 +24,13 @@ class AddFacesToStrip(State):
     # event callbacks
 
     def delete(self):
-        return self
+        node = self._currentNode.remove()
+        if node:
+            self._currentNode = node
+            self._waitForInput()
+            return self
+        else:
+            return self._previous()
 
     def complete(self):
         return self._stateFactory.selectStripRoot(None, self._dagPath, self._patchBuilder, self._facetree)()

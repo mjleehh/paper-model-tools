@@ -32,9 +32,6 @@ class SelectStripRoot(State):
         self._patchBuilder.reset()
         flattenTree(self._dagPath, self._facetree, self._patchBuilder)
 
-    def delete(self):
-        return self
-
     def complete(self):
         return DoNothing()
 
