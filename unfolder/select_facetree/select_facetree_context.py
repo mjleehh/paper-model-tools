@@ -18,6 +18,7 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
         self._selection = Selection()
         self._state = self._stateFactory.initialState()
         self._state = self._state()
+        self._setHelpString(self._state.helpString())
 
     def toolOffCleanup(self):
         """ Called each time the context is deactivated. """
@@ -26,6 +27,8 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
             self._selection = None
         self._state = None
         print('tool cleanup completed')
+
+    # callbacks
 
     def doPress(self, event):
         self._doCallback(self._state.doPress, event)
@@ -53,8 +56,6 @@ class SelectFacetreeContext(omp.MPxSelectionContext):
         print('selection changed context')
         self._doCallback(self._state.selectionChanged)
 
-    def setHelpString(self, msg):
-        self._setHelpString(msg)
-
     def _doCallback(self, f, *args):
         self._state = f(*args)
+        self._setHelpString(self._state.helpString())

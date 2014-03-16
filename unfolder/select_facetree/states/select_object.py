@@ -8,6 +8,9 @@ from unfolder.select_facetree.states.util import getEventPosition
 class SelectObject(State):
     """ Select an object for the face tree selection tool. """
 
+    def helpString(self):
+        return 'select an object'
+
     def __init__(self, stateFactory):
         State.__init__(self, stateFactory, None)
 
@@ -25,9 +28,6 @@ class SelectObject(State):
         om.MGlobal.displayWarning('Nothing done.')
         print('select abort')
         return self._stateFactory.doNoting()()
-
-    def _helpString(self):
-        return 'select an object to unfold'
 
     # advance
 

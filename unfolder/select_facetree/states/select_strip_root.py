@@ -15,6 +15,9 @@ class SelectStripRoot(State):
         self._facetree = facetree
         self._patchBuilder = patchBuilder
 
+    def helpString(self):
+        return 'select a face to begin a new strip'
+
     def ffwd(self):
         self._waitForInput()
         return self
@@ -37,9 +40,6 @@ class SelectStripRoot(State):
 
     def abort(self):
         return DoNothing()
-
-    def _helpString(self):
-        return 'select faces from strip in order'
 
     def _handleSelection(self):
         selectedFace = getSelectedFace(self._dagPath)

@@ -8,6 +8,9 @@ class DoNothing:
         this state.
     """
 
+    def helpString(self):
+        return 'tool completed'
+
     # event callbacks
 
     def doPress(self, event):
@@ -33,3 +36,5 @@ class DoNothing:
     def abort(self):
         print('nothing abort')
         return self
+
+

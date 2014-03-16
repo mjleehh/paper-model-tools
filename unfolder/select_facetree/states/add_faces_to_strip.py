@@ -18,6 +18,9 @@ class AddFacesToStrip(State):
         self._updateSelectableFaces()
         self._patchBuilder = patchBuilder
 
+    def helpString(self):
+        return 'select faces for strip in order'
+
     # event callbacks
 
     def delete(self):
@@ -30,9 +33,6 @@ class AddFacesToStrip(State):
         return DoNothing()
 
     # advance
-
-    def _helpString(self):
-        return 'select faces from strip in order'
 
     def ffwd(self):
         self._waitForInput()

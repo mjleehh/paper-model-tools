@@ -18,6 +18,9 @@ class SelectInitialFace(State):
         self._dagPath = dagPath
         self._dagPath.extendToShape()
 
+    def helpString(self):
+        return 'select a first face'
+
     # event callbacks
 
     def delete(self):
@@ -27,8 +30,7 @@ class SelectInitialFace(State):
         om.MGlobal.displayWarning('Nothing done.')
         return self._stateFactory.doNothing()()
 
-    def _helpString(self):
-        return 'select a root face for patch'
+
 
     # advance
 
