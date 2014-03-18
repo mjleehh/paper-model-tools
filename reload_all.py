@@ -13,7 +13,11 @@ import unfolder.analyze_patch
 reload(unfolder.analyze_patch)
 
 import unfolder.analyze_patch.papersize
+import unfolder.analyze_patch.inner_vertex_checker
+import unfolder.analyze_patch.line_intersection_checker
 reload(unfolder.analyze_patch.papersize)
+reload(unfolder.analyze_patch.inner_vertex_checker)
+reload(unfolder.analyze_patch.line_intersection_checker)
 
 import unfolder.automatic_unfold
 reload(unfolder.automatic_unfold)
@@ -21,17 +25,21 @@ reload(unfolder.automatic_unfold)
 import unfolder.automatic_unfold.create_paper_model_command
 import unfolder.automatic_unfold.generate_facetree
 import unfolder.automatic_unfold.selected_faces
+import unfolder.automatic_unfold.test_collision
 reload(unfolder.automatic_unfold.create_paper_model_command)
 reload(unfolder.automatic_unfold.generate_facetree)
 reload(unfolder.automatic_unfold.selected_faces)
+reload(unfolder.automatic_unfold.test_collision)
 
 import unfolder.create_patch
 reload(unfolder.create_patch)
 
 import unfolder.create_patch.patch
 import unfolder.create_patch.patch_builder
+import unfolder.create_patch.face_utils
 reload(unfolder.create_patch.patch)
 reload(unfolder.create_patch.patch_builder)
+reload(unfolder.create_patch.face_utils)
 
 import unfolder.select_facetree
 reload(unfolder.select_facetree)
