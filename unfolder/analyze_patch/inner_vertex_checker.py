@@ -25,7 +25,7 @@ class InnerVertexChecker:
 
     def __init__(self, edges):
         upwardEdges = [makeEdgeUpward(edge) for edge in edges]
-        self._edges = sorted(upwardEdges, fstY)
+        self._edges = sorted(upwardEdges, key=fstY)
         boundingRect = BoundingRect()
         for edge in edges:
             boundingRect.add(fst(edge))
@@ -36,11 +36,12 @@ class InnerVertexChecker:
         if not self._boundingRect.contains(vertex):
             return False
         scanlineY = y(vertex)
-        intersectingEdges = getIntersectingEdges(self._edges)
+        intersectingEdges = getIntersectingEdges(scanlineY, self._edges)
         numIntersectionsLeftOfVertex = 0
         for edge in intersectingEdges:
             if xIntersection(scanlineY, edge) < x(vertex):
                 numIntersectionsLeftOfVertex += 1
+        return numIntersectionsLeftOfVertex % 2 != 0
 
 
 def xIntersection(p_y, edge):
