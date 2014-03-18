@@ -27,8 +27,6 @@ class SelectInitialFace(State):
         om.MGlobal.displayWarning('Nothing done.')
         return self._stateFactory.doNothing()()
 
-
-
     # advance
 
     def doPress(self, event):
