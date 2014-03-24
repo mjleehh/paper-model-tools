@@ -4,57 +4,96 @@ from .util.functional import hasAtLeastOne, conditionalTransform
 class GraphBuilder:
     def __init__(self):
         self._nodes = {}
+        self._edges = {}
 
-    def addNode(self, data, connectedNodes):
-        node = self._nodes[data] if data in self._nodes else GraphNode(data)
-        currentlyConnectedNodes = [connectedNode.data for connectedNode in node.connectedNodes()]
-        nodesToConnect = connectedNodes - currentlyConnectedNodes
-        for nodeToConnectValue in nodesToConnect:
-            nodeToConnect = self._nodes[nodeToConnectValue] if nodeToConnectValue in self._nodes else GraphNode(nodeToConnectValue)
-            node.edges.append(GraphEdge(None, (node, nodeToConnect)))
+    def addNode(self, value, connectedValues):
+        thisNode = self._getNode(value)
+        for otherValue in self._findNewConnections(thisNode, connectedValues):
+            otherNode = self._getNode(otherValue)
+            self._getEdge(thisNode, otherNode)
+
+    # private
+
+    def _findNewConnections(self, node, connectedValues):
+        currentlyConnectedValues = frozenset([connectedNode.data for connectedNode in node.connectedNodes()])
+        return currentlyConnectedValues - frozenset(connectedValues)
+
+    def _getNode(self, value):
+        if value not in self._nodes:
+            node = GraphNode(value)
+            self._nodes[value] = node
+            return node
+        else:
+            return self._nodes[value]
+
+    def _getEdge(self, firstNode, secondNode):
+        edgeKey = (firstNode.value, secondNode.value)
+        if edgeKey in self._edges:
+            return self._edges[edgeKey]
+        else:
+            edge = GraphEdge(firstNode, secondNode)
+            self._edges[edgeKey] = edge
+            return edge
 
 
 class Graph:
-    def __init__(self):
+    def __init__(self, nodes, edges):
         self._nodes = []
         self._edges = []
 
 
 class GraphNode:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, value):
+        self.value = value
         self.edges = []
 
     def connectedNodes(self):
-        return conditionalTransform(lambda edge: edge.getOther(self.data))
+        return conditionalTransform(lambda edge: edge.getOther(self.value), self.edges)
 
-    def isConnectedTo(self, nodeData):
-        return hasAtLeastOne(lambda edge: edge.hasNode(nodeData), self.edges)
+    def isConnectedTo(self, nodeValue):
+        return hasAtLeastOne(lambda edge: edge.hasNode(nodeValue), self.edges)
 
-    def isData(self, nodeData):
-        return self.data == nodeData
+    def hasValue(self, value):
+        return self.value == value
 
     def __eq__(self, other):
-        return self.data == other.data
+        return self.value == other.value
+
+    def __hash__(self):
+        return self.value
 
 
 class GraphEdge:
-    def __init__(self, edgeData, nodes):
-        self._data = edgeData
-        (self._fst, self._snd) = nodes
+    def __init__(self, fst, snd):
+        if fst == snd:
+            raise ValueError('Loop detected ' + str(fst))
+        self.nodes = (fst, snd)
 
-    def hasNode(self, nodeData):
-        return self._fst.isData(nodeData) or self._snd.isData(nodeData)
+    def hasNode(self, nodeValue):
+        return self._fst().hasValue(nodeValue) or self._snd().hasValue(nodeValue)
 
-    def isTerminus(self):
-        return bool(self._snd)
-
-    def getOther(self, nodeData):
-        if self.isTerminus():
-            return False
-        if self._fst.isData(nodeData):
-            return self._snd
-        elif self._snd.isData(nodeData):
-            return self._fst
+    def getOther(self, nodeValue):
+        if self._fst().hasValue(nodeValue):
+            return self._snd()
+        elif self._fst().hasValue(nodeValue):
+            return self._snd()
         else:
             return False
+
+    def __eq__(self, other):
+        return self.nodes == other.nodes or reversed(self.nodes) == other.nodes
+
+    def __hash__(self):
+        return GraphEdge.key(self._fst(), self._snd())
+
+    @staticmethod
+    def key(firstNode, secondNode):
+        return hash(frozenset([firstNode, secondNode]))<
+
+    # private
+
+    def _fst(self):
+        return self.nodes[0]
+
+    def _snd(self):
+        return self.nodes[1]
