@@ -1,4 +1,5 @@
-from .util.functional import hasAtLeastOne, conditionalTransform
+def values(nodeList):
+    return [node.value for node in nodeList]
 
 
 class GraphBuilder:
@@ -15,7 +16,7 @@ class GraphBuilder:
     # private
 
     def _findNewConnections(self, node, connectedValues):
-        currentlyConnectedValues = frozenset([connectedNode.data for connectedNode in node.connectedNodes()])
+        currentlyConnectedValues = frozenset(values(node.connectedNodes()))
         return currentlyConnectedValues - frozenset(connectedValues)
 
     def _getNode(self, value):
@@ -27,19 +28,43 @@ class GraphBuilder:
             return self._nodes[value]
 
     def _getEdge(self, firstNode, secondNode):
-        edgeKey = (firstNode.value, secondNode.value)
+        edge = GraphEdge(firstNode, secondNode)
+        edgeKey = hash(edge)
         if edgeKey in self._edges:
             return self._edges[edgeKey]
         else:
-            edge = GraphEdge(firstNode, secondNode)
             self._edges[edgeKey] = edge
             return edge
+
+    def toGraph(self):
+        return Graph(self._nodes, self._edges)
 
 
 class Graph:
     def __init__(self, nodes, edges):
-        self._nodes = []
-        self._edges = []
+        self._nodes = nodes
+        self._edges = edges
+
+    def getConnectedSubgraphs(self):
+
+        def findConnectedGraph(remainingNodes):
+            initialNode = iter(remainingNodes).next()
+            res = addConnectedNodes(initialNode, remainingNodes)
+            return res
+
+        def addConnectedNodes(node, remainingNodes):
+            remainingNodes.remove(node)
+            subgraph = [node]
+            connectedNodes = frozenset(node.getConnected()) - remainingNodes
+            for connectedNode in connectedNodes:
+                subgraph.extend(addConnectedNodes(connectedNode, remainingNodes))
+            return subgraph
+
+        connectedGraphs = []
+        remainingNodes = set(self._nodes)
+        while remainingNodes:
+            connectedGraphs.append(findConnectedGraph(remainingNodes))
+        return connectedGraphs
 
 
 class GraphNode:
@@ -47,20 +72,18 @@ class GraphNode:
         self.value = value
         self.edges = []
 
-    def connectedNodes(self):
-        return conditionalTransform(lambda edge: edge.getOther(self.value), self.edges)
+    def getConnectedNodes(self):
+        return [edge.getOther(self) for edge in self.edges]
 
-    def isConnectedTo(self, nodeValue):
-        return hasAtLeastOne(lambda edge: edge.hasNode(nodeValue), self.edges)
 
-    def hasValue(self, value):
-        return self.value == value
+    #def isConnectedTo(self, nodeValue):
+    #    return hasAtLeastOne(lambda edge: edge.hasNode(nodeValue), self.edges)
 
     def __eq__(self, other):
         return self.value == other.value
 
     def __hash__(self):
-        return self.value
+        return hash(self.value)
 
 
 class GraphEdge:
@@ -69,26 +92,19 @@ class GraphEdge:
             raise ValueError('Loop detected ' + str(fst))
         self.nodes = (fst, snd)
 
-    def hasNode(self, nodeValue):
-        return self._fst().hasValue(nodeValue) or self._snd().hasValue(nodeValue)
+    def hasNode(self, node):
+        return self._fst() == node or self._snd() == node
 
-    def getOther(self, nodeValue):
-        if self._fst().hasValue(nodeValue):
+    def getOther(self, node):
+        if self._fst() == node:
             return self._snd()
-        elif self._fst().hasValue(nodeValue):
+        elif self._fst() == node:
             return self._snd()
         else:
-            return False
-
-    def __eq__(self, other):
-        return self.nodes == other.nodes or reversed(self.nodes) == other.nodes
+            return None
 
     def __hash__(self):
-        return GraphEdge.key(self._fst(), self._snd())
-
-    @staticmethod
-    def key(firstNode, secondNode):
-        return hash(frozenset([firstNode, secondNode]))<
+        return hash(frozenset((self._fst(), self._snd())))
 
     # private
 
