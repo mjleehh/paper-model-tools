@@ -1,5 +1,14 @@
 import maya.OpenMaya as om
 
+
+def index(meshComponent):
+    return meshComponent.index
+
+
+def indices(meshComponentList):
+    return [component.index for component in meshComponentList]
+
+
 class MeshFaces:
     def __init__(self, dagPath, faceIndices):
         self._dagPath = dagPath
@@ -31,6 +40,16 @@ class MeshFace:
     def getConnectingEdges(self, otherFace):
         sharedEdgeIndices = frozenset(self._getEdgeIndices()) & frozenset(otherFace._getEdgeIndices())
         return [MeshEdge(self._dagPath, index) for index in sharedEdgeIndices]
+
+    def getConnectedFaces(self):
+        return [MeshFace(self._dagPath, index) for index in self._getConnectedFaceIndices()]
+
+    # private
+
+    def _getConnectedFaceIndices(self):
+        retval = om.MIntArray()
+        self._getFaceIter().getConnectedFaces(retval)
+        return retval
 
     def _getEdgeIndices(self):
         retval = om.MIntArray()
