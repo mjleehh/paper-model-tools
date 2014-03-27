@@ -75,6 +75,8 @@ class MeshEdge:
     def _getEdgeIter(self):
         return setIter(om.MItMeshEdge, self.index)
 
+# private
+
 def setIter(iter, index):
     prevIndex = om.MScriptUtil()
     prevIndex.createFromInt(0)
