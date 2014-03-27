@@ -6,7 +6,9 @@ reload(unfolder)
 
 # first level
 import unfolder.facetree
+import unfolder.graph
 reload(unfolder.facetree)
+reload(unfolder.graph)
 
 # second level
 import unfolder.analyze_patch
@@ -23,13 +25,17 @@ import unfolder.automatic_unfold
 reload(unfolder.automatic_unfold)
 
 import unfolder.automatic_unfold.create_paper_model_command
+import unfolder.automatic_unfold.new_create_paper_model_command
 import unfolder.automatic_unfold.generate_facetree
 import unfolder.automatic_unfold.selected_faces
 import unfolder.automatic_unfold.test_collision
+import unfolder.automatic_unfold.graph_from_maya_mesh
 reload(unfolder.automatic_unfold.create_paper_model_command)
+reload(unfolder.automatic_unfold.new_create_paper_model_command)
 reload(unfolder.automatic_unfold.generate_facetree)
 reload(unfolder.automatic_unfold.selected_faces)
 reload(unfolder.automatic_unfold.test_collision)
+reload(unfolder.automatic_unfold.graph_from_maya_mesh)
 
 import unfolder.create_patch
 reload(unfolder.create_patch)
@@ -40,6 +46,16 @@ import unfolder.create_patch.face_utils
 reload(unfolder.create_patch.patch)
 reload(unfolder.create_patch.patch_builder)
 reload(unfolder.create_patch.face_utils)
+
+import unfolder.mesh
+reload(unfolder.mesh)
+
+import unfolder.mesh.maya_mesh
+import unfolder.mesh.obj_importer
+import unfolder.mesh.obj_mesh
+reload(unfolder.mesh.maya_mesh)
+reload(unfolder.mesh.obj_importer)
+reload(unfolder.mesh.obj_mesh)
 
 import unfolder.select_facetree
 reload(unfolder.select_facetree)
@@ -72,9 +88,11 @@ reload(unfolder.select_facetree.states.select_strip_root)
 import unfolder.util
 reload(unfolder.util)
 
+import unfolder.util.functional
 import unfolder.util.helpers
 import unfolder.util.plane_coordinate_system
 import unfolder.util.selection
+reload(unfolder.util.functional)
 reload(unfolder.util.helpers)
 reload(unfolder.util.plane_coordinate_system)
 reload(unfolder.util.selection)
