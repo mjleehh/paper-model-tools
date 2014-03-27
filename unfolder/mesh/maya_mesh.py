@@ -29,13 +29,11 @@ class MeshFaces:
         for faceIndex in self.faceIndices:
             yield self[faceIndex]
 
+
 class MeshFace:
     def __init__(self, dagPath, index):
         self._dagPath = dagPath
         self.index = index
-
-    def __len__(self):
-        return self._getEdgeIndices().length()
 
     def getConnectingEdges(self, otherFace):
         sharedEdgeIndices = frozenset(self._getEdgeIndices()) & frozenset(otherFace._getEdgeIndices())
@@ -58,6 +56,7 @@ class MeshFace:
 
     def _getFaceIter(self):
         return setIter(om.MItMeshPolygon(), self.index)
+
 
 class MeshEdge:
     def __init__(self, dagPath, index):
