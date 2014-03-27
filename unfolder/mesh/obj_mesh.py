@@ -1,4 +1,4 @@
-class Mesh_Faces:
+class MeshFaces:
 
     def __init__(self, objMesh):
         self._objMesh = objMesh
@@ -27,7 +27,8 @@ class MeshFace:
         pass
 
     def getConnectedFaces(self):
-        pass
+        face = self._objMesh.faces[self.index]
+        return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
 
 class ObjMesh():
@@ -44,3 +45,14 @@ class ObjFace():
     def __init__(self, edges, textureCoords):
         self.edges = edges
         self.textureCoords = textureCoords
+
+
+class ObjEdge():
+
+    def __init__(self, fst, snd):
+        self.fst = fst
+        self.snd = snd
+        self.faces = []
+
+    def __hash__(self):
+        return hash(frozenset((self.fst, self.snd)))
