@@ -1,13 +1,12 @@
 import maya.OpenMayaMPx as omp
 import maya.OpenMaya as om
-
 from unfolder.automatic_unfold.graph_from_maya_mesh import graphFromFaces
-
 from unfolder.graph import GraphBuilder
 from unfolder.mesh.maya_mesh import MeshFaces
 
 
-class CreatePaperModelCommand(omp.MPxCommand):
+class CreatePaperModelCommand2(omp.MPxCommand):
+
     def ___init__(self):
         omp.MPxCommand.__init__(self)
 
@@ -40,5 +39,12 @@ class CreatePaperModelCommand(omp.MPxCommand):
             selectionListIter.next()
 
     def _flattenObject(self, dagPath, components):
-        faces = MeshFaces(dagPath, components)
-        graphFromFaces(faces, GraphBuilder)
+        if not components.isNull():
+            print(components)
+            faceIndices = om.MIntArray()
+            om.MFnSingleIndexedComponent(components).getElements(faceIndices)
+        else:
+            faceIndices = range(om.MFnMesh(dagPath).numPolygons())
+
+        faces = MeshFaces(dagPath, faceIndices)
+        graphFromFaces(faces, GraphBuilder())
