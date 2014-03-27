@@ -1,9 +1,7 @@
-from unfolder.util.mesh_faces import MeshFaces, indices, index
+from unfolder.mesh.maya_mesh import indices, index
 
 
-def convertMayaMeshToGraph(dagPath, faceIndices, graphBuilder):
-
-    faces = MeshFaces(dagPath, faceIndices)
+def graphFromFaces(faces, graphBuilder):
 
     for face in faces:
         connectedFaceIndices = indices(face.getConnectedFaces())
