@@ -16,7 +16,7 @@ class GraphBuilder:
     # private
 
     def _findNewConnections(self, node, connectedValues):
-        currentlyConnectedValues = frozenset(values(node.connectedNodes()))
+        currentlyConnectedValues = frozenset(values(node.getConnectedNodes()))
         return currentlyConnectedValues - frozenset(connectedValues)
 
     def _getNode(self, value):
