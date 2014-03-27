@@ -1,4 +1,4 @@
-from unfolder.mesh.obj_mesh import ObjMesh, ObjFace
+from unfolder.mesh.obj_mesh import ObjMesh, ObjFace, ObjEdge
 
 
 class ObjImporter:
@@ -60,16 +60,19 @@ class ObjImporter:
         edges = []
 
         for vertex in vertices:
-            edges.append(self.addEdge(prevVertex, vertex))
+            edgeIndex = self.addEdge(prevVertex, vertex)
+            self._edges[edgeIndex].faces.append(len(self._faces))
+            edges.append(edgeIndex)
             prevVertex = vertex
         return edges
 
     def addEdge(self, fst, snd):
-        key = frozenset((fst, snd))
+        edge = ObjEdge(fst, snd)
+        key = hash(edge)
         if key in self._edgeMapping:
             return self._edgeMapping[key]
         else:
             index = len(self._edges)
-            self._edges.append((fst, snd))
+            self._edges.append(ObjEdge(fst, snd))
             self._edgeMapping[key] = index
             return index
