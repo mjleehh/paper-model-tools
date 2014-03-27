@@ -1,14 +1,6 @@
 import maya.OpenMaya as om
 
 
-def index(meshComponent):
-    return meshComponent.index
-
-
-def indices(meshComponentList):
-    return [component.index for component in meshComponentList]
-
-
 class MeshFaces:
     def __init__(self, dagPath, faceIndices):
         self._dagPath = dagPath
@@ -55,7 +47,7 @@ class MeshFace:
         return retval
 
     def _getFaceIter(self):
-        return setIter(om.MItMeshPolygon(), self.index)
+        return setIter(om.MItMeshPolygon(self._dagPath), self.index)
 
 
 class MeshEdge:
@@ -72,7 +64,7 @@ class MeshEdge:
         return retval
 
     def _getEdgeIter(self):
-        return setIter(om.MItMeshEdge, self.index)
+        return setIter(om.MItMeshEdge(self._dagPath), self.index)
 
 # private
 
