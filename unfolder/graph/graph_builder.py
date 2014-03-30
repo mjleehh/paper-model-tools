@@ -44,6 +44,7 @@ class GraphBuilder:
         else:
             index = len(self._edges)
             self._edges.append(edge)
+            self._edgeMap[edge] = index
             self._edgeLists[firstIndex].append(index)
             self._edgeLists[secondIndex].append(index)
             return index
