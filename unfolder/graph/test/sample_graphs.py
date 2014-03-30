@@ -15,6 +15,19 @@ def createSimpleGraph():
     graphBuilder.addNode('C', ['B', 'D'])
     return graphBuilder.toGraph()
 
+def createGraphWithTreeSpanningTrees():
+    """
+       A --- B
+           / :
+         /   :
+       D --- C
+    """
+    graphBuilder = GraphBuilder()
+    graphBuilder.addNode('A', ['B'])
+    graphBuilder.addNode('B', ['A', 'C', 'D'])
+    graphBuilder.addNode('C', ['B', 'D'])
+    return graphBuilder.toGraph()
+
 def createSimpleTree():
     """
            A
