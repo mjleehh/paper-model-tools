@@ -1,7 +1,5 @@
 from unittest import TestCase
-from unfolder.graph.graph_builder import GraphBuilder
-from unfolder.graph.test.sample_graphs import createSimpleGraph, \
-    createSimpleTree, createGraphWithIsolatedNode
+from unfolder.graph.test.sample_graphs import createSimpleGraph, createSimpleTree, createGraphWithIsolatedNode
 
 
 class TestGraph(TestCase):
