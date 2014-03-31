@@ -1,11 +1,9 @@
 import maya.OpenMaya as om
 
-from .add_faces_to_strip import AddFacesToStrip
 from .state import State
-from .do_nothing import DoNothing
-from unfolder.create_patch.patch_builder import MeshPatchBuilder
+from unfolder.patch.patch_builder import MeshPatchBuilder
 
-from unfolder.facetree import Node
+from unfolder.tree.Tree import TreeNode
 from unfolder.select_facetree.states.util import getEventPosition, \
     getSelectedFace
 
@@ -49,6 +47,6 @@ class SelectInitialFace(State):
     def _nextState(self):
         selectedFace = getSelectedFace(self._dagPath)
         if selectedFace:
-            return self._stateFactory.addFacesToStrip(self.reset, self._dagPath, MeshPatchBuilder(), Node(selectedFace))
+            return self._stateFactory.addFacesToStrip(self.reset, self._dagPath, MeshPatchBuilder(), TreeNode(selectedFace))
         else:
             return None
