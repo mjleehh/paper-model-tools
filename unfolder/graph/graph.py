@@ -59,6 +59,8 @@ class Graph:
         return True
 
     def getSpanningTree(self, rootNodeIndex = 0):
+        if not self.nodes:
+            return Graph([], [])
         def traverse(nodeIndex, parentIndex):
             if notVisitedNodes[nodeIndex]:
                 notVisitedNodes[nodeIndex] = False
