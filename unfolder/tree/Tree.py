@@ -1,4 +1,4 @@
-class Node:
+class TreeNode:
     """ Nodes of a face tree.
 
     A face tree structure, where each sibling face only shares one edge with its parent.
@@ -13,7 +13,7 @@ class Node:
     def addChild(self, childFace):
         """ Create a child to this node and return it.
         """
-        child = Node(childFace)
+        child = TreeNode(childFace)
         self.children.append(child)
         child.parent = self
         return child
@@ -41,13 +41,13 @@ class Node:
         else:
             return self
 
-    def findSubtree(self, rootValue):
+    def findSubtree(self, value):
         """ Find the node in the tree that matches a certain face.
         """
-        if self.face == rootValue:
+        if self.face == value:
             return self
         for child in self.children:
-            subtree = child.findSubtree(rootValue)
+            subtree = child.findSubtree(value)
             if subtree:
                 return subtree
         return None
