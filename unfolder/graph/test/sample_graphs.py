@@ -27,6 +27,9 @@ def createSingularGraph():
 
 
 def createPrimitiveGraph():
+    """
+       A - B
+    """
     return buildGraph()\
         .addNode('A', ['B'])\
         .toGraph()
