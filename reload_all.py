@@ -5,9 +5,9 @@ import unfolder
 reload(unfolder)
 
 # first level
-import unfolder.facetree
+import unfolder.tree.Tree
 import unfolder.graph
-reload(unfolder.facetree)
+reload(unfolder.tree.Tree)
 reload(unfolder.graph)
 
 # second level
@@ -37,15 +37,15 @@ reload(unfolder.automatic_unfold.selected_faces)
 reload(unfolder.automatic_unfold.test_collision)
 reload(unfolder.automatic_unfold.graph_from_maya_mesh)
 
-import unfolder.create_patch
-reload(unfolder.create_patch)
+import unfolder.patch
+reload(unfolder.patch)
 
-import unfolder.create_patch.patch
-import unfolder.create_patch.patch_builder
-import unfolder.create_patch.face_utils
-reload(unfolder.create_patch.patch)
-reload(unfolder.create_patch.patch_builder)
-reload(unfolder.create_patch.face_utils)
+import unfolder.patch.patch
+import unfolder.patch.patch_builder
+import unfolder.patch.face_utils
+reload(unfolder.patch.patch)
+reload(unfolder.patch.patch_builder)
+reload(unfolder.patch.face_utils)
 
 import unfolder.mesh
 reload(unfolder.mesh)
