@@ -1,4 +1,4 @@
-from unfolder.graph.graph_builder import GraphBuilder
+from unfolder.graph.graph_builder import GraphBuilder, buildGraph
 
 
 def createSimpleGraph():
@@ -8,12 +8,29 @@ def createSimpleGraph():
        : /   :
        D --- C
     """
-    graphBuilder = GraphBuilder()
-    graphBuilder.addNode('A', ['B', 'D'])
-    graphBuilder.addNode('D', ['A', 'B', 'C'])
-    graphBuilder.addNode('B', ['A', 'C', 'D'])
-    graphBuilder.addNode('C', ['B', 'D'])
-    return graphBuilder.toGraph()
+    return buildGraph()\
+        .addNode('A', ['B', 'D'])\
+        .addNode('D', ['A', 'B', 'C'])\
+        .addNode('B', ['A', 'C', 'D'])\
+        .addNode('C', ['B', 'D'])\
+        .toGraph()
+
+
+def createEmptyGraph():
+    return buildGraph().toGraph()
+
+
+def createSingularGraph():
+    return buildGraph()\
+        .addNode('A', [])\
+        .toGraph()
+
+
+def createPrimitiveGraph():
+    return buildGraph()\
+        .addNode('A', ['B'])\
+        .toGraph()
+
 
 def createGraphWithTreeSpanningTrees():
     """
@@ -56,3 +73,17 @@ def createGraphWithIsolatedNode():
     graphBuilder.addNode('C', ['E'])
     graphBuilder.addNode('F', [])
     return graphBuilder.toGraph()
+
+def createDiamondGraph():
+    """
+       A --- B
+         \ / :
+         / \ :
+       D --- C
+    """
+    return buildGraph()\
+        .addNode('A', ['B', 'C', 'D'])\
+        .addNode('B', ['A', 'C', 'D'])\
+        .addNode('C', ['A', 'B', 'D'])\
+        .addNode('D', ['A', 'B', 'C'])\
+        .toGraph()
