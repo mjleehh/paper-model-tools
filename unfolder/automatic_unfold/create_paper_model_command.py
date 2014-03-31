@@ -1,10 +1,12 @@
 import maya.OpenMayaMPx as omp
 import maya.OpenMaya as om
 
-from unfolder.create_patch.patch import flattenTree
-from unfolder.create_patch.patch_builder import MeshPatchBuilder
+from .test_collision import detectCollision
 
-from .generate_facetree import createFacetreeSpiral, createFacetreeLightning
+from unfolder.patch.patch import flattenTree
+from unfolder.patch.patch_builder import MeshPatchBuilder
+
+from .generate_facetree import createFacetreeLightning
 from .selected_faces import findConnectedFaces
 
 
@@ -46,3 +48,6 @@ class CreatePaperModelCommand(omp.MPxCommand):
             tree = createFacetreeLightning(dagPath, connectedFaceSet)
             patchBuilder = MeshPatchBuilder()
             flattenTree(dagPath, tree, patchBuilder)
+            detectCollision(patchBuilder.mesh)
+
+
