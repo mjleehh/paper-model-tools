@@ -1,5 +1,7 @@
 from .graph import Graph, GraphEdge
 
+def buildGraph():
+    return GraphBuilder()
 
 class GraphBuilder:
     def __init__(self):
@@ -14,6 +16,7 @@ class GraphBuilder:
         for otherValue in self._findNewConnections(thisIndex, connectedValues):
             otherIndex = self._createNode(otherValue)
             self._createEdge(thisIndex, otherIndex)
+        return self
 
     # private
 
