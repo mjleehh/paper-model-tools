@@ -29,13 +29,13 @@ import unfolder.automatic_unfold.create_paper_model_command2
 import unfolder.automatic_unfold.generate_facetree
 import unfolder.automatic_unfold.selected_faces
 import unfolder.automatic_unfold.test_collision
-import unfolder.automatic_unfold.graph_from_maya_mesh
+import unfolder.automatic_unfold.mesh_to_graph
 reload(unfolder.automatic_unfold.create_paper_model_command)
 reload(unfolder.automatic_unfold.create_paper_model_command2)
 reload(unfolder.automatic_unfold.generate_facetree)
 reload(unfolder.automatic_unfold.selected_faces)
 reload(unfolder.automatic_unfold.test_collision)
-reload(unfolder.automatic_unfold.graph_from_maya_mesh)
+reload(unfolder.automatic_unfold.mesh_to_graph)
 
 import unfolder.patch
 reload(unfolder.patch)
