@@ -1,5 +1,4 @@
 class MeshFaces:
-
     def __init__(self, objMesh):
         self._objMesh = objMesh
 
@@ -16,8 +15,8 @@ class MeshFaces:
         for faceIndex in range(len(self._objMesh.faces)):
             yield self[faceIndex]
 
-class MeshFace:
 
+class MeshFace:
     def __init__(self, objMesh, index):
         self._objMesh = objMesh
         self.index = index
@@ -28,6 +27,26 @@ class MeshFace:
     def getConnectedFaces(self):
         face = self._objMesh.faces[self.index]
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
+
+    def getVertices(self):
+        inds = self._getVertexIndices()
+        return [self._objMesh.vertices[index] for index in inds]
+
+    def _getVertexIndices(self):
+        vertexIndices = []
+        edges = [self._objMesh.edges[edgeIndex].vertices for edgeIndex in self._objMesh.faces[self.index].edges]
+        prevEdge = edges[-1]
+        for edge in edges:
+            (fst, snd) = edge
+            if fst in prevEdge:
+                vertexIndices.append(fst)
+            else:
+                vertexIndices.append(snd)
+            prevEdge = edge
+        return vertexIndices
+
+
+# private
 
 
 class ObjMesh():
@@ -54,6 +73,7 @@ class ObjFace():
             delim = ', '
         res += '])'
         return res
+
 
 class ObjEdge():
 
