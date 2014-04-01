@@ -16,7 +16,6 @@ class MeshFaces:
         for faceIndex in range(len(self._objMesh.faces)):
             yield self[faceIndex]
 
-
 class MeshFace:
 
     def __init__(self, objMesh, index):
@@ -46,13 +45,27 @@ class ObjFace():
         self.edges = edges
         self.textureCoords = textureCoords
 
+    def __repr__(self):
+        res = '(E = ['
+        delim = ''
+        for edge in self.edges:
+            res += delim
+            res += str(edge)
+            delim = ', '
+        res += '])'
+        return res
 
 class ObjEdge():
 
     def __init__(self, fst, snd):
-        self.fst = fst
-        self.snd = snd
         self.faces = []
+        self.vertices = (fst, snd) if fst < snd else (snd, fst)
 
     def __hash__(self):
-        return hash(frozenset((self.fst, self.snd)))
+        return hash(self.vertices)
+
+    def __eq__(self, other):
+        return self.vertices == other.vertices
+
+    def __repr__(self):
+        return str(self.vertices)
