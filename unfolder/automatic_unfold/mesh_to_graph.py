@@ -1,7 +1,7 @@
 def indices(meshComponentList):
     return [component.index for component in meshComponentList]
 
-def graphFromFaces(faces, graphBuilder):
+def meshToGraph(faces, graphBuilder):
 
     for face in faces:
         connectedFaceIndices = indices(face.getConnectedFaces())

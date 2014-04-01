@@ -1,6 +1,6 @@
 import maya.OpenMayaMPx as omp
 import maya.OpenMaya as om
-from unfolder.automatic_unfold.graph_from_maya_mesh import graphFromFaces
+from unfolder.automatic_unfold.mesh_to_graph import meshToGraph
 from unfolder.graph import GraphBuilder
 from unfolder.mesh.maya_mesh import MeshFaces
 
@@ -47,4 +47,4 @@ class CreatePaperModelCommand2(omp.MPxCommand):
             faceIndices = range(om.MFnMesh(dagPath).numPolygons())
 
         faces = MeshFaces(dagPath, faceIndices)
-        graphFromFaces(faces, GraphBuilder())
+        meshToGraph(faces, GraphBuilder())
