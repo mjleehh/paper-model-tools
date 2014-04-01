@@ -1,22 +1,32 @@
 from unittest import TestCase
-from unfolder.automatic_unfold.graph_from_maya_mesh import graphFromFaces
-from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.obj_mesh import MeshFaces
+from unfolder.mesh.obj_mesh import ObjEdge
 
 
 class TestGraph(TestCase):
 
-    def test_testObjImport(self):
+    def test_importObj_box(self):
         reader = ObjImporter()
-        mesh = reader.read('resources/box-and-pyramid.obj')
+        box = reader.read('resources/box.obj')
 
-        graph = graphFromFaces(MeshFaces(mesh), GraphBuilder())
-        self.assertFalse(graph.isConnected())
-        subgraphs = graph.getConnectedComponents()
+        # check if vertices have been imported correctly
 
-        print(len(subgraphs))
-        print(subgraphs)
+        expectedVertices = [(-73.5, -61.25, 65.900002), (76.5, -61.25, 65.900002), (-73.5, 61.25, 65.900002), (76.5, 61.25, 65.900002), (-73.5, 61.25, -65.400002), (76.5, 61.25, -65.400002), (-73.5, -61.25, -65.400002), (76.5, -61.25, -65.400002)]
+        self.assertEqual(box.vertices, expectedVertices)
 
-        for subgraph in subgraphs:
-            self.assertTrue(subgraph.isConnected())
+        # texture coordinates are missing
+        self.fail()
+
+        # check if faces have been imported correctly
+
+        self.assertEqual(len(box.faces), 6)
+        expectedFaceEdgeLists = [[0, 1, 2, 3], [2, 4, 5, 6], [5, 7, 8, 9], [8, 10, 0, 11], [10, 7, 4, 1], [11, 3, 6, 9]]
+        for faceIndex, face in enumerate(box.faces):
+            self.assertEqual(face.edges, expectedFaceEdgeLists[faceIndex])
+
+        # check if edges have been imported correctly
+
+        self.assertEqual(len(box.edges), 12)
+        edgeTuples = [(1, 2), (2, 4), (3, 4), (1, 3), (4, 6), (5, 6), (3, 5), (6, 8), (7, 8), (5, 7), (2, 8), (1, 7)]
+        expectedEdges = [ObjEdge(fst, snd) for (fst, snd) in edgeTuples]
+        self.assertEqual(box.edges, expectedEdges)
