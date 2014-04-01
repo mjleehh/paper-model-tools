@@ -58,6 +58,8 @@ class MeshEdge:
     def getConnectedFaces(self):
         return [MeshFace(self._dagPath, index) for index in self._getConnectedFaceIndices()]
 
+    # private
+
     def _getConnectedFaceIndices(self):
         retval = om.MIntArray()
         self._getEdgeIter().getConnectedFaces(retval)
