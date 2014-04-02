@@ -22,7 +22,10 @@ class MeshFace:
         self.index = index
 
     def getConnectingEdges(self, otherFace):
-        pass
+        edges = set(self._value.edges)
+        otherEdges = set(otherFace.value_.edges)
+        return edges & otherEdges
+
 
     def getConnectedFaces(self):
         face = self._objMesh.faces[self.index]
@@ -32,9 +35,12 @@ class MeshFace:
         inds = self._getVertexIndices()
         return [self._objMesh.vertices[index] for index in inds]
 
+    # private
+
+
     def _getVertexIndices(self):
         vertexIndices = []
-        edges = [self._objMesh.edges[edgeIndex].vertices for edgeIndex in self._objMesh.faces[self.index].edges]
+        edges = [self._objMesh.edges[edgeIndex].vertices for edgeIndex in self._value.edges]
         prevEdge = edges[-1]
         for edge in edges:
             (fst, snd) = edge
@@ -44,6 +50,10 @@ class MeshFace:
                 vertexIndices.append(snd)
             prevEdge = edge
         return vertexIndices
+
+    @property
+    def _value(self):
+        return self._objMesh.faces[self.index]
 
 
 # private
