@@ -4,6 +4,8 @@ from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.graph.spanning_trees import SpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter
 from unfolder.mesh.obj_mesh import MeshFaces
+from unfolder.patch.treeToPatch import treeToPatch
+
 
 def printTree(tree, depth=0):
     res = ' ' * depth
@@ -21,8 +23,4 @@ for connectedComponent in connectedComponents:
     for index, spanningTree in enumerate(SpanningTrees(connectedComponent)):
         print('spanningTree no %i' % index)
         tree = graphToTree(spanningTree)
-        printTree(tree)
-
-
-
-
+        treeToPatch(faces, tree)
