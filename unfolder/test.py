@@ -23,4 +23,4 @@ for connectedComponent in connectedComponents:
     for index, spanningTree in enumerate(SpanningTrees(connectedComponent)):
         print('spanningTree no %i' % index)
         tree = graphToTree(spanningTree)
-        treeToPatch(faces, tree)
+        treeToPatch(tree, faces)
