@@ -23,20 +23,26 @@ class MeshFace:
 
     def getConnectingEdges(self, otherFace):
         edges = set(self._value.edges)
-        otherEdges = set(otherFace.value_.edges)
+        otherEdges = set(otherFace._value.edges)
         return edges & otherEdges
-
 
     def getConnectedFaces(self):
         face = self._objMesh.faces[self.index]
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
-    def getVertices(self):
-        inds = self._getVertexIndices()
-        return [self._objMesh.vertices[index] for index in inds]
+    @property
+    def vertices(self):
+        vertexInds = self._getVertexIndices()
+        for vertexIndex in vertexInds:
+            yield self._objMesh.vertices[vertexIndex]
+
+    @property
+    def edges(self):
+        for edgeIndex in self._value.edges:
+            yield self._objMesh.edges[edgeIndex]
+
 
     # private
-
 
     def _getVertexIndices(self):
         vertexIndices = []
@@ -60,7 +66,6 @@ class MeshFace:
 
 
 class ObjMesh():
-
     def __init__(self, faces, edges, vertices, textureCoords):
         self.faces = faces
         self.edges = edges
@@ -69,7 +74,6 @@ class ObjMesh():
 
 
 class ObjFace():
-
     def __init__(self, edges, textureCoords):
         self.edges = edges
         self.textureCoords = textureCoords
@@ -86,7 +90,6 @@ class ObjFace():
 
 
 class ObjEdge():
-
     def __init__(self, fst, snd):
         self.faces = []
         self.vertices = (fst, snd) if fst < snd else (snd, fst)
