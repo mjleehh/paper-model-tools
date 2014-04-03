@@ -1,3 +1,7 @@
+import numpy as np
+from unfolder.patch.patch2 import PatchEdge
+
+
 def treeToPatch(tree, meshFaces):
     return TreeToPatchConverter(meshFaces, None).buildPatch(tree)
 
@@ -22,17 +26,16 @@ class TreeToPatchConverter:
         self._faces = meshFaces
         self._patchBuilder = patchBuilder
         # the patch normal
-        self.normal = mappingPlaneNormal = (0, 1, 0)
-        # the patch origin
-        self.mappingPlaneOrigin = (0, 0, 0)
-
+        self.normal = np.array((0, 1, 0))
+        self.vertices = []
 
     def buildPatch(self, tree):
-
-#        initialEdge = edges[0]
-        initialPatchEdge = (1, 0, 0)
-        patchOrigin = (0, 0, 0)
-        initialConnectionEdge = MappedEdge(0, patchOrigin, initialPatchEdge)
+        # the patch origin
+        origin = np.array((0, 0, 0))
+        self.vertices = [origin, origin + (1, 0, 0)]
+#       initialEdge =
+        initialPatchEdge = PatchEdge(None, 0, 1)
+        initialConnectionEdge = MappedEdge(0, origin, initialPatchEdge)
 
         self._flattenSubtree(tree, initialConnectionEdge)
 
@@ -41,7 +44,7 @@ class TreeToPatchConverter:
         faceIndex = subtree.value
         face = self._faces[faceIndex]
 
-        localCoordinateSystem = self.getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index)
+        localCoordinateSystem = self.getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, face)
 
         #globalCoodinateSystem = PlaneCoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
