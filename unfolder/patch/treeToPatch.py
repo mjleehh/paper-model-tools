@@ -1,5 +1,5 @@
 import numpy as np
-from unfolder.patch.patch2 import PatchEdge
+from unfolder.patch.patch2 import PatchEdge, PatchFace
 
 
 def treeToPatch(tree, meshFaces):
@@ -23,11 +23,14 @@ class MappedEdge:
 class TreeToPatchConverter:
 
     def __init__(self, meshFaces, patchBuilder):
-        self._faces = meshFaces
+        self._meshFaces = meshFaces
         self._patchBuilder = patchBuilder
         # the patch normal
         self.normal = np.array((0, 1, 0))
+
         self.vertices = []
+        self._faceMapping = {}
+        self.faces = []
 
     def buildPatch(self, tree):
         # the patch origin
@@ -41,19 +44,37 @@ class TreeToPatchConverter:
 
 
     def _flattenSubtree(self, subtree, connectionEdge):
-        faceIndex = subtree.value
-        face = self._faces[faceIndex]
+        inFaceIndex = subtree.value
+        inFace = self._meshFaces[inFaceIndex]
+        parentEdge = None
+        edges = []
 
-        localCoordinateSystem = self.getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, face)
+        localCoordinateSystem = self.getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, inFace)
 
         #globalCoodinateSystem = PlaneCoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
 
+        inChildFaceIndices = []
+        inMeshIndices = inFace.edgeIndices
+
         for child in subtree:
-            childFace = self._faces[child.value]
-            sharedEdge = face.getConnectingEdges(childFace)
-            print(sharedEdge)
+            inChildFaceIndex = child.value
+            inChildFaceIndices.append(inChildFaceIndex)
+            inChildFace = self._meshFaces[inChildFaceIndex]
             connectionEdge = None #getConnectionEdgeForEdge(sharedEdge)
             self._flattenSubtree(child, connectionEdge)
+
+
+        self._faceMapping[inFaceIndex] = len(self.faces)
+        self.faces.append(PatchFace(parentEdge, edges))
+
+    def _getFace(self, meshFaceIndex):
+        if meshFaceIndex in self._faceMapping:
+            return self._faceMapping[meshFaceIndex]
+        else:
+            index = len(self.faces)
+            self._faceMapping[meshFaceIndex] = index
+            self.faces.append(None)
+            return index
 
     def getEdgeInPlaneNormal(self, patchEdge):
         e2 = np.cross(patchEdge.e1, self.normal)
@@ -71,17 +92,11 @@ class TreeToPatchConverter:
         'into' the face area. The three vectors (e_1, e_2, n) for right handed
         coordinates for the 3D space (e_1 x e_2 = n).
         """
-        edgeIter = om.MItMeshEdge(dagPath)
-        setIter(edgeIter, edgeIndex)
-        polyIter = om.MItMeshPolygon(dagPath)
-        setIter(polyIter,faceIndex)
-        begin = edgeIter.point(0)
-        end = edgeIter.point(1)
+        (begin, end) = edge
         e1 = end - begin
         e1.normalize()
-        normal = om.MVector()
-        polyIter.getNormal(normal)
-        e2 = normal ^ e1
+        normal = face.getNormal()
+        e2 = np.cross(normal, e1)
         e2.normalize()
         return PlaneCoordinateSystem(begin, e1, e2)
 
