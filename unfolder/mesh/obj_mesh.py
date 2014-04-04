@@ -30,6 +30,10 @@ class MeshFace:
         face = self._objMesh.faces[self.index]
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
+    def getNormal(self):
+        (fst, snd) = self.edges
+
+
     @property
     def vertices(self):
         vertexInds = self._getVertexIndices()
@@ -39,8 +43,12 @@ class MeshFace:
     @property
     def edges(self):
         for edgeIndex in self._value.edges:
-            yield self._objMesh.edges[edgeIndex]
+            yield MeshEdge(edgeIndex, self._objMesh)
 
+    @property
+    def edgeIndices(self):
+        for edgeIndex in self._value.edges:
+            yield edgeIndex
 
     # private
 
@@ -61,6 +69,19 @@ class MeshFace:
     def _value(self):
         return self._objMesh.faces[self.index]
 
+
+class MeshEdge:
+    def __init__(self, index, objMesh):
+        self._objMesh = objMesh
+        self.index = index
+
+    def __getitem__(self, item):
+        return self._objMesh.vertices[self._value()]
+
+    # private
+
+    def _value(self):
+        return self._objMesh.edges[self.index]
 
 # private
 
