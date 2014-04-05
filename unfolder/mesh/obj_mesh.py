@@ -1,3 +1,6 @@
+from unfolder.util.vector import Vector
+
+
 class MeshFaces:
     def __init__(self, objMesh):
         self._objMesh = objMesh
@@ -31,8 +34,14 @@ class MeshFace:
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
     def getNormal(self):
-        (fst, snd) = self.edges
-
+        vertices1 = self.edgeIndices[0]
+        vertices2 = self.edgeIndices[1]
+        v2 = vertices1 & vertices2
+        v1 = vertices1 - v2
+        v3 = vertices2 - v2
+        e1 = Vector(v2) - Vector(v1)
+        e2 = Vector(v3) - Vector(v2)
+        print(e1 ^ e2)
 
     @property
     def vertices(self):
@@ -42,13 +51,11 @@ class MeshFace:
 
     @property
     def edges(self):
-        for edgeIndex in self._value.edges:
-            yield MeshEdge(edgeIndex, self._objMesh)
+        return MeshFaceEdges(self.index, self._objMesh)
 
     @property
     def edgeIndices(self):
-        for edgeIndex in self._value.edges:
-            yield edgeIndex
+        return self._value.edges
 
     # private
 
@@ -70,18 +77,55 @@ class MeshFace:
         return self._objMesh.faces[self.index]
 
 
-class MeshEdge:
-    def __init__(self, index, objMesh):
+class MeshFaceEdges:
+    def __init__(self, faceIndex, objMesh):
         self._objMesh = objMesh
-        self.index = index
+        self._faceIndex = faceIndex
 
     def __getitem__(self, item):
-        return self._objMesh.vertices[self._value()]
+        prevEdge = self._getEdgeVertices(item - 1)
+        (fst, snd) = self._getEdgeVertices(item)
+        edgeIndex = self._edgeIndices[item]
+        flipped = fst in prevEdge
+        return MeshEdge(edgeIndex, self._objMesh, flipped)
+
+    def __len__(self):
+        return len(self._edgeIndices)
+
+    def __iter__(self):
+        for faceEdgeIndex, v in enumerate(self._edgeIndices):
+            yield self[faceEdgeIndex]
 
     # private
 
+    def _getEdgeVertices(self, index):
+        edgeIndex = self._edgeIndices[index]
+        return self._objMesh.edges[edgeIndex].vertices
+
+    @property
+    def _edgeIndices(self):
+        return self._objMesh.faces[self._faceIndex].edges
+
+
+class MeshEdge:
+    def __init__(self, index, objMesh, flipped=False):
+        self._objMesh = objMesh
+        self.index = index
+        self.flipped = flipped
+
+    def __getitem__(self, item):
+        return self._objMesh.vertices[self._value.vertices[item]]
+
+    def direction(self):
+        begin, end = (self[0], self[1]) if not self.flipped else (self[1], self[0])
+        return Vector(end) - Vector(begin)
+
+    # private
+
+    @property
     def _value(self):
         return self._objMesh.edges[self.index]
+
 
 # private
 
