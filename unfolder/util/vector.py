@@ -1,3 +1,4 @@
+from copy import copy
 import numpy as np
 import numpy.linalg as lg
 
@@ -25,10 +26,12 @@ class Vector:
         # works for vectors and scalars
         return np.dot(self.v, other)
 
-    def __div__(self, scalar):
+    def __truediv__(self, scalar):
         if not isinstance(scalar, (int, float, complex)):
             raise DimensionError('Divisor must be scalar!')
-        return Vector(self.v / scalar)
+        v = self.v.astype(float)
+        v /= scalar
+        return Vector(v)
 
     def __xor__(self, other):
         if not self._hasSameDim(other):
@@ -38,8 +41,8 @@ class Vector:
     def norm(self):
         return lg.norm(self.v)
 
-    def normalize(self):
-        self.v /= self.norm()
+    def normalized(self):
+        return self / self.norm()
 
     def __len__(self):
         return self.v.size
