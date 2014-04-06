@@ -1,4 +1,4 @@
-from unfolder.mesh.obj_mesh import ObjMesh, ObjFace, ObjEdge
+from unfolder.mesh.obj_mesh_impl import ObjMesh, ObjEdge, ObjFace
 
 
 class ObjImporter:
