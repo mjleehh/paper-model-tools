@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.obj_mesh import ObjEdge
+from unfolder.mesh.obj_mesh_impl import ObjEdge
 
 
 class ObjImporterTests(TestCase):
