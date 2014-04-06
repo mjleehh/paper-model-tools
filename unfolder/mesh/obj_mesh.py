@@ -1,26 +1,25 @@
+from unfolder.mesh.obj_mesh_impl import ObjMesh
 from unfolder.util.vector import Vector
 
+class Mesh:
+    def __init__(self, objMesh: ObjMesh):
+        self._objMesh= objMesh
 
-class MeshFaces:
-    def __init__(self, objMesh):
-        self._objMesh = objMesh
+    @property
+    def faces(self):
+        return MeshFaces(self._objMesh)
 
-    def __len__(self):
-        return len(self._objMesh.faces)
+    @property
+    def edges(self):
+        return MeshEdges(self._objMesh)
 
-    def __getitem__(self, faceIndex):
-        return MeshFace(self._objMesh, faceIndex)
-
-    def __contains__(self, faceIndex):
-        return 0 <= faceIndex < len(self._objMesh.faces)
-
-    def __iter__(self):
-        for faceIndex in range(len(self._objMesh.faces)):
-            yield self[faceIndex]
+    @property
+    def vertices(self):
+        return self._objMesh.vertices
 
 
 class MeshFace:
-    def __init__(self, objMesh, index):
+    def __init__(self, objMesh: ObjMesh, index):
         self._objMesh = objMesh
         self.index = index
 
@@ -31,17 +30,13 @@ class MeshFace:
 
     def getConnectedFaces(self):
         face = self._objMesh.faces[self.index]
+        print(face)
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
     def getNormal(self):
-        vertices1 = self.edgeIndices[0]
-        vertices2 = self.edgeIndices[1]
-        v2 = vertices1 & vertices2
-        v1 = vertices1 - v2
-        v3 = vertices2 - v2
-        e1 = Vector(v2) - Vector(v1)
-        e2 = Vector(v3) - Vector(v2)
-        print(e1 ^ e2)
+        e1 = self.edges[0].direction()
+        e2 = self.edges[1].direction()
+        return (e1 ^ e2).normalize()
 
     @property
     def vertices(self):
@@ -78,7 +73,7 @@ class MeshFace:
 
 
 class MeshFaceEdges:
-    def __init__(self, faceIndex, objMesh):
+    def __init__(self, faceIndex, objMesh: ObjMesh):
         self._objMesh = objMesh
         self._faceIndex = faceIndex
 
@@ -93,7 +88,7 @@ class MeshFaceEdges:
         return len(self._edgeIndices)
 
     def __iter__(self):
-        for faceEdgeIndex, v in enumerate(self._edgeIndices):
+        for faceEdgeIndex, val in enumerate(self._edgeIndices):
             yield self[faceEdgeIndex]
 
     # private
@@ -108,7 +103,7 @@ class MeshFaceEdges:
 
 
 class MeshEdge:
-    def __init__(self, index, objMesh, flipped=False):
+    def __init__(self, index, objMesh: ObjMesh, flipped=False):
         self._objMesh = objMesh
         self.index = index
         self.flipped = flipped
@@ -116,9 +111,17 @@ class MeshEdge:
     def __getitem__(self, item):
         return self._objMesh.vertices[self._value.vertices[item]]
 
+    @property
     def direction(self):
-        begin, end = (self[0], self[1]) if not self.flipped else (self[1], self[0])
-        return Vector(end) - Vector(begin)
+        return Vector(self.end) - Vector(self.begin)
+
+    @property
+    def begin(self):
+        return self[0] if not self.flipped else self[1]
+
+    @property
+    def end(self):
+        return self[1] if not self.flipped else self[0]
 
     # private
 
@@ -130,40 +133,31 @@ class MeshEdge:
 # private
 
 
-class ObjMesh():
-    def __init__(self, faces, edges, vertices, textureCoords):
-        self.faces = faces
-        self.edges = edges
-        self.vertices = vertices
-        self.textureCoords = textureCoords
+class MeshFaces:
+    def __init__(self, objMesh: ObjMesh):
+        self._objMesh = objMesh
+
+    def __len__(self):
+        return len(self._objMesh.faces)
+
+    def __getitem__(self, faceIndex):
+        return MeshFace(self._objMesh, faceIndex)
+
+    def __iter__(self):
+        for faceIndex, val in enumerate(self._objMesh.faces):
+            yield self[faceIndex]
 
 
-class ObjFace():
-    def __init__(self, edges, textureCoords):
-        self.edges = edges
-        self.textureCoords = textureCoords
+class MeshEdges:
+    def __init__(self, objMesh: ObjMesh):
+        self._objMesh = objMesh
 
-    def __repr__(self):
-        res = '(E = ['
-        delim = ''
-        for edge in self.edges:
-            res += delim
-            res += str(edge)
-            delim = ', '
-        res += '])'
-        return res
+    def __len__(self):
+        return len(self._objMesh.edges)
 
+    def __getitem__(self, edgeIndex):
+        return MeshEdge(edgeIndex, self._objMesh)
 
-class ObjEdge():
-    def __init__(self, fst, snd):
-        self.faces = []
-        self.vertices = (fst, snd) if fst < snd else (snd, fst)
-
-    def __hash__(self):
-        return hash(self.vertices)
-
-    def __eq__(self, other):
-        return self.vertices == other.vertices
-
-    def __repr__(self):
-        return str(self.vertices)
+    def __iter__(self):
+        for edgeIndex, val in enumerate(self._objMesh.edges):
+            yield self[edgeIndex]
