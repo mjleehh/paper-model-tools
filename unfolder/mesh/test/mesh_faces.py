@@ -16,9 +16,9 @@ class MeshFacesTests(TestCase):
         self.assertEqual(len(self.faces), 5)
 
     def test_getitem(self):
-        for i, face in enumerate(self.faces):
-            self.assertEqual(face.index, self.faces[i].index)
+        for faceIndex, face in enumerate(self.faces):
+            self.assertEqual(faceIndex, self.faces[faceIndex].index)
 
     def test_iter(self):
-        for i, face in enumerate(self.faces):
-            self.assertEqual(i, face.index)
+        for faceIndex, face in enumerate(self.faces):
+            self.assertEqual(faceIndex, face.index)
