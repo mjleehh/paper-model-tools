@@ -4,6 +4,7 @@ from unfolder.util.vector import Vector
 
 import numpy.linalg as lg
 
+
 class TestVector(TestCase):
     def test_add_2d(self):
         v1 = Vector(1, 2)
@@ -105,13 +106,13 @@ class TestVector(TestCase):
         self.assertEqual(v3, v1dotv2)
 
     def test_div(self):
-        v1 = Vector(3, 1)
-        s1 = 7
-        v1overs1 = Vector(21, 7)
+        v1 = Vector(12, 22)
+        s1 = 4
+        v1overs1 = Vector(3, 5.5)
         self.assertEqual(v1 / s1, v1overs1)
 
         v3 = copy(v1)
-        v3 /=  s1
+        v3 /= s1
         self.assertEqual(v3, v1overs1)
 
     def test_crossProduct(self):
@@ -131,10 +132,11 @@ class TestVector(TestCase):
         v4 ^= v1
         self.assertEqual(v4, v2xv1)
 
-    def test_normalize(self):
-        v = Vector(2., 5., 8., 5.)
-        v.normalize()
-        self.assertEqual(v.norm(), 1.)
+    def test_normalized(self):
+        v = Vector(2., 8., 22.)
+        nv = v.normalized()
+        self.assertEqual(v, Vector(2, 8, 22))
+        self.assertEqual(nv, Vector(0.085125653075874858, 0.34050261230349943, 0.93638218383462346))
 
     def test_norm(self):
         v1 = Vector(1., 0.)
