@@ -5,9 +5,9 @@ import unfolder
 reload(unfolder)
 
 # first level
-import unfolder.tree.Tree
+import unfolder.tree.tree
 import unfolder.graph
-reload(unfolder.tree.Tree)
+reload(unfolder.tree.tree)
 reload(unfolder.graph)
 
 # second level
