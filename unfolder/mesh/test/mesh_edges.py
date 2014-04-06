@@ -17,3 +17,8 @@ class MeshEdgesTests(TestCase):
 
     def test_getitem(self):
         for edgeIndex, edge in enumerate(self.edges):
+            self.assertEqual(edgeIndex, self.edges[edgeIndex].index)
+
+    def test_iter(self):
+        for edgeIndex, edge in enumerate(self.edges):
+            self.assertEqual(edgeIndex, edge.index)
