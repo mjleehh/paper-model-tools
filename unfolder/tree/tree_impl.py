@@ -1,6 +1,6 @@
 from unfolder.graph.graph import Graph
 
-def graphToTree(graph):
+def graphToTree(graph : Graph):
     return Node(0, graph)
 
 
