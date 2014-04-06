@@ -34,9 +34,9 @@ class MeshFace:
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
     def getNormal(self):
-        e1 = self.edges[0].direction()
-        e2 = self.edges[1].direction()
-        return (e1 ^ e2).normalize()
+        e1 = self.edges[0].direction
+        e2 = self.edges[1].direction
+        return (e1 ^ e2).normalized()
 
     @property
     def vertices(self):
