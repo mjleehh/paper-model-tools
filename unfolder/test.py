@@ -1,5 +1,5 @@
 from unfolder.automatic_unfold.mesh_to_graph import meshToGraph
-from unfolder.graph.Tree import graphToTree
+from unfolder.tree.tree_impl import graphToTree
 from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.graph.spanning_trees import SpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter

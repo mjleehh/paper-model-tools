@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 
 from unfolder.util.helpers import setIter
-from unfolder.tree.Tree import TreeNode
+from unfolder.tree.tree import TreeNode
 
 
 def createFacetreeLightning(dagPath, connectedFaces):
