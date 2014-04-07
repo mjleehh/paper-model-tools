@@ -37,15 +37,15 @@ reload(unfolder.automatic_unfold.selected_faces)
 reload(unfolder.automatic_unfold.test_collision)
 reload(unfolder.automatic_unfold.mesh_to_graph)
 
-import unfolder.patch
-reload(unfolder.patch)
+import unfolder.model
+reload(unfolder.model)
 
-import unfolder.patch.patch
-import unfolder.patch.patch_builder
-import unfolder.patch.face_utils
-reload(unfolder.patch.patch)
-reload(unfolder.patch.patch_builder)
-reload(unfolder.patch.face_utils)
+import unfolder.model.patch
+import unfolder.model.model_builder
+import unfolder.model.face_utils
+reload(unfolder.model.patch)
+reload(unfolder.model.model_builder)
+reload(unfolder.model.face_utils)
 
 import unfolder.mesh
 reload(unfolder.mesh)
