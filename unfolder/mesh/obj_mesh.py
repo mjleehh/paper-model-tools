@@ -26,11 +26,10 @@ class MeshFace:
     def getConnectingEdges(self, otherFace):
         edges = set(self._value.edges)
         otherEdges = set(otherFace._value.edges)
-        return edges & otherEdges
+        return [MeshEdge(edge, self._objMesh) for edge in edges & otherEdges]
 
     def getConnectedFaces(self):
         face = self._objMesh.faces[self.index]
-        print(face)
         return [MeshFace(self._objMesh, faceIndex) for edge in face.edges for faceIndex in self._objMesh.edges[edge].faces if faceIndex != self.index]
 
     def getNormal(self):
@@ -51,6 +50,12 @@ class MeshFace:
     @property
     def edgeIndices(self):
         return self._value.edges
+
+    def __eq__(self, other):
+        return self.index == other.index
+
+    def __hash__(self):
+        return hash(self.index)
 
     # private
 
@@ -122,6 +127,12 @@ class MeshEdge:
     @property
     def end(self):
         return self[1] if not self.flipped else self[0]
+
+    def __eq__(self, other):
+        return self.index == other.index
+
+    def __hash__(self):
+        return hash(self.index)
 
     # private
 
