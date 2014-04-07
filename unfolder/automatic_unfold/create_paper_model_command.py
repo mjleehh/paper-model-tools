@@ -3,8 +3,8 @@ import maya.OpenMaya as om
 
 from .test_collision import detectCollision
 
-from unfolder.patch.patch import flattenTree
-from unfolder.patch.patch_builder import MeshPatchBuilder
+from unfolder.model.patch import flattenTree
+from unfolder.model.model_builder import MeshPatchBuilder
 
 from .generate_facetree import createFacetreeLightning
 from .selected_faces import findConnectedFaces

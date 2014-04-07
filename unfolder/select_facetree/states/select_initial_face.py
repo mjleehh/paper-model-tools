@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 
 from .state import State
-from unfolder.patch.patch_builder import MeshPatchBuilder
+from unfolder.model.model_builder import MeshPatchBuilder
 
 from unfolder.tree.tree import TreeNode
 from unfolder.select_facetree.states.util import getEventPosition, \

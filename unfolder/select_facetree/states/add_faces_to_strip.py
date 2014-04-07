@@ -4,7 +4,7 @@ from .do_nothing import DoNothing
 from .state import State
 from .util import getEventPosition, getSelectedFace, highlightFaces
 
-from unfolder.patch.patch import flattenTree
+from unfolder.model.patch import flattenTree
 from unfolder.util.helpers import setIter
 
 
