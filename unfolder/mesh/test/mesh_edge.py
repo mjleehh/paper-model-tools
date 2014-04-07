@@ -43,16 +43,16 @@ class MeshEdgeTests(TestCase):
 
     def test_direction(self):
         e1 = self.meshFaceEdges[0]
-        self.assertEqual(e1.direction(), Vector(-150.0, 0.0, 0.0))
+        self.assertEqual(e1.direction, Vector(-150.0, 0.0, 0.0))
 
         e2 = self.meshFaceEdges[1]
-        self.assertEqual(e2.direction(), Vector(0.0, 0.0, -131.300004))
+        self.assertEqual(e2.direction, Vector(0.0, 0.0, -131.300004))
 
         e3 = self.meshFaceEdges[2]
-        self.assertEqual(e3.direction(), Vector(150.0, 0.0, 0.0))
+        self.assertEqual(e3.direction, Vector(150.0, 0.0, 0.0))
 
         e4 = self.meshFaceEdges[3]
-        self.assertEqual(e4.direction(), Vector(0.0, 0.0, 131.300004))
+        self.assertEqual(e4.direction, Vector(0.0, 0.0, 131.300004))
 
     def test_begin(self):
         e1 = self.meshFaceEdges[0]
@@ -79,3 +79,10 @@ class MeshEdgeTests(TestCase):
 
         e4 = self.meshFaceEdges[3]
         self.assertEqual((-73.5, -61.25, 65.900002), e4.end)
+
+    def test_hash_and_eq(self):
+        for i, this in enumerate(self.meshFaceEdges):
+            for j, other in enumerate(self.meshFaceEdges):
+                areEqual = i == j
+                self.assertEqual(this == other, areEqual)
+                self.assertEqual(hash(this) == hash(other), areEqual)
