@@ -83,4 +83,3 @@ class TestGraph(TestCase):
         twoComponentGraph = createGraphWithIsolatedNode()
         twoComponents = twoComponentGraph.getConnectedComponents()
 
-        print(twoComponents)

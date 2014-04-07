@@ -12,12 +12,6 @@ class SpanningTrees:
 
     def __iter__(self):
         V = self.T_0.numEdges()
-
-        print('graph:')
-        print(self.graph)
-        print('initial:')
-        print(self.T_0)
-
         yield self.T_0
         for T in self._derivedSpanningTrees(self.T_0, V - 1):
             yield T
@@ -25,7 +19,6 @@ class SpanningTrees:
     def _derivedSpanningTrees(self, T_p, k):
         if k >= 0:
             e_k = self.T_0.edges[k]
-            print('k = ' + str(k) + ' e_k = ' + str(e_k))
             for g in self._entrablesForSpanningTreeEdge(T_p, e_k):
                 T_c = self._replaceEdge(T_p, e_k, g)
                 if T_c and T_c.isTree():
