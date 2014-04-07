@@ -45,6 +45,13 @@ class MeshFaceTests(TestCase):
         normal = self.faces[0].getNormal()
         print(normal)
 
+    def test_eq_and_hash(self):
+        for i, this in enumerate(self.faces):
+            for j, other in enumerate(self.faces):
+                areEqual = i == j
+                self.assertEqual(this == other, areEqual)
+                self.assertEqual(hash(this) == hash(other), areEqual)
+
     # private
 
     def _compareFaceSet(self, xs, *expected):
