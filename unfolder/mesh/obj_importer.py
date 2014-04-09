@@ -66,7 +66,6 @@ class ObjImporter:
 
         for vertex in vertices:
             edgeIndex = self._addEdge(prevVertex, vertex)
-            self._edges[edgeIndex].faces.append(len(self._faces))
             edges.append(edgeIndex)
             prevVertex = vertex
         return edges
