@@ -39,9 +39,23 @@ class MeshFace:
 
     @property
     def vertices(self):
-        vertexInds = self._getVertexIndices()
+        vertexInds = self.vertexIndices
         for vertexIndex in vertexInds:
             yield self._objMesh.vertices[vertexIndex]
+
+    @property
+    def vertexIndices(self):
+        vertexIndices = []
+        edges = [self._objMesh.edges[edgeIndex].vertices for edgeIndex in self._value.edges]
+        prevEdge = edges[-1]
+        for edge in edges:
+            (fst, snd) = edge
+            if fst in prevEdge:
+                vertexIndices.append(fst)
+            else:
+                vertexIndices.append(snd)
+            prevEdge = edge
+        return vertexIndices
 
     @property
     def edges(self):
@@ -58,19 +72,6 @@ class MeshFace:
         return hash(self.index)
 
     # private
-
-    def _getVertexIndices(self):
-        vertexIndices = []
-        edges = [self._objMesh.edges[edgeIndex].vertices for edgeIndex in self._value.edges]
-        prevEdge = edges[-1]
-        for edge in edges:
-            (fst, snd) = edge
-            if fst in prevEdge:
-                vertexIndices.append(fst)
-            else:
-                vertexIndices.append(snd)
-            prevEdge = edge
-        return vertexIndices
 
     @property
     def _value(self):
@@ -127,9 +128,6 @@ class MeshEdge:
     @property
     def end(self):
         return self[1] if not self.flipped else self[0]
-
-    def isBorderEdge(self):
-        return len(self._value.faces) == 1
 
     def __eq__(self, other):
         return self.index == other.index
