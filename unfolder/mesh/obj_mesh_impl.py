@@ -12,19 +12,14 @@ class ObjFace():
         self.textureCoords = textureCoords
 
     def __repr__(self):
-        res = '(E = ['
-        delim = ''
-        for edge in self.edges:
-            res += delim
-            res += str(edge)
-            delim = ', '
-        res += '])'
+        res = '('
+        res += 'E = ' + repr(self.edges)
+        res += ')'
         return res
 
 
 class ObjEdge():
     def __init__(self, fst, snd):
-        self.faces = []
         self.vertices = (fst, snd) if fst < snd else (snd, fst)
 
     def __hash__(self):
@@ -34,4 +29,4 @@ class ObjEdge():
         return self.vertices == other.vertices
 
     def __repr__(self):
-        return str(self.vertices)
+        return repr(self.vertices)
