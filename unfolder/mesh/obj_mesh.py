@@ -128,6 +128,9 @@ class MeshEdge:
     def end(self):
         return self[1] if not self.flipped else self[0]
 
+    def isBorderEdge(self):
+        return len(self._value.faces) == 1
+
     def __eq__(self, other):
         return self.index == other.index
 
