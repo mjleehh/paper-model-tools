@@ -5,7 +5,7 @@ from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.graph.spanning_trees import SpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter
 from unfolder.mesh.obj_mesh import MeshFaces
-from unfolder.model.treeToModel import treeToModel
+from unfolder.model.tree_to_model import treeToModel
 
 
 def printTree(tree, depth=0):
