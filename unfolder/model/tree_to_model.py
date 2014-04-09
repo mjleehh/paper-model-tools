@@ -1,7 +1,7 @@
 from unfolder.mesh.obj_mesh import MeshEdge, Mesh, MeshFaces
+from unfolder.model.model_impl import Model
 
 from unfolder.tree.tree_impl import Node
-from unfolder.model.model_impl import PatchEdge, ModelPatch, Model
 from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
 from unfolder.util.vector import Vector
 
@@ -38,11 +38,12 @@ class TreeToModelConverter:
             childPatchIndex = self._flattenSubtree(child, edgeTransform)
             patchBuilder.addSharedEdge(childPatchIndex, edgeTransform)
 
-        a = set(face.getConnectedFaces())
-        b = [self._meshFaces[child.value] for child in subtree]
-        gluedFaces =  a - set(b)
+        a = [face.index for face in face.getConnectedFaces()]
+        b = [child.value for child in subtree]
+        gluedFaces =  set(a) - set(b)
+        print(gluedFaces)
         for gluedFace in gluedFaces:
-            edgeTransform = patchBuilder.getEdgeTransform(gluedFace)
+            edgeTransform = patchBuilder.getEdgeTransform(self._meshFaces[gluedFace])
             gluedPatchIndex = self.modelBuilder.getPatchIndex(gluedFace)
             patchBuilder.addGlueEdge(gluedPatchIndex, edgeTransform)
         self.modelBuilder.addPatch(face, patchBuilder.build())
@@ -53,9 +54,9 @@ class PatchBuilder:
         self.face = face
         self._modelBuilder = modelBuilder
         self._edgeMapper = EdgeMapper(face, parentEdgeTransform, modelBuilder.normal)
-        self.sharedEdges = []
-        self.glueEdges = []
-        self.borderEdges = []
+        self.patch = []
+        self.edges = []
+        self.glued = False
 
     def build(self):
         return ModelPatch(None, self.sharedEdges, self.glueEdges, self.borderEdges)
@@ -81,9 +82,11 @@ class ModelBuilder:
     def __init__(self, normal):
         self.normal = normal
         self.vertices = []
+        self.edges = []
         self.patches = []
-        self._vertexMapping = {}
         self._patchMapping = {}
+        self._vertexMapping = {}
+        self._edgeMapping = {}
 
     def build(self):
         return Model(self.patches, self.vertices)
@@ -96,6 +99,15 @@ class ModelBuilder:
             self.vertices.append(vertex)
             self._vertexMapping[vertex] = vertexIndex
             return vertexIndex
+
+    def addEdge(self, edge):
+        if edge in self._edgeMapping:
+            return self._edgeMapping[edge]
+        else:
+            edgeIndex = len(self.edges)
+            self.edges.append(edge)
+            self._edgeMapping[edge] = edgeIndex
+            return edgeIndex
 
     def addPatch(self, face, patch):
         patchIndex = len(self.patches)
