@@ -1,6 +1,7 @@
 class Model:
-    def __init__(self, patches, edges, vertices):
+    def __init__(self, patches, connections, edges, vertices):
         self.patches = patches
+        self.connections = connections
         self.edges = edges
         self.vertices = vertices
 
@@ -18,23 +19,30 @@ class ModelPatch:
         return res
 
 
-class PatchConnectionSet:
-    def __init__(self, patch, edges, areGlued):
-        self.patch = patch
-        self.edges = edges
-        self.areGlued = areGlued
+class PatchConnection:
+    def __init__(self, fstEdgeIndices, sndEdgeIndices=None):
+        # index of first patch < index of second patch
+        self._fstEdges = fstEdgeIndices
+        self._sndEdges = sndEdgeIndices
+
+    @property
+    def isGlued(self):
+        return self._sndEdges is not None
 
     def __repr__(self):
         res = '('
-        res += 'P = '+ self.patch
-        res += ', E = ' + repr(self.edges)
-        res += ', g = ' + repr(self.areGlued)
+        if self.isGlued:
+            res += 'E1 = ' + repr(self._fstEdges)
+            res += ', E2 = ' + repr(self._sndEdges)
+        else:
+            res += 'E = ' + repr(self._fstEdges)
         res += ')'
         return res
 
+
 class ModelEdge:
-    def __init__(self, fst, snd):
-        self.vertices = (fst, snd) if fst < snd else (snd, fst)
+    def __init__(self, fstVertexIndex, sndVertexIndex):
+        self.vertices = (fstVertexIndex, sndVertexIndex) if fstVertexIndex <= sndVertexIndex else (sndVertexIndex, fstVertexIndex)
 
     def __hash__(self):
         return hash(self.vertices)
