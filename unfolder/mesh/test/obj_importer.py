@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.obj_mesh_impl import ObjEdge
+from unfolder.mesh.mesh_impl import EdgeImpl
 
 
 class ObjImporterTests(TestCase):
@@ -31,5 +31,5 @@ class ObjImporterTests(TestCase):
 
         self.assertEqual(len(box.edges), 12)
         edgeTuples = [(0, 1), (1, 3), (2, 3), (0, 2), (3, 5), (4, 5), (2, 4), (5, 7), (6, 7), (4, 6), (1, 7), (0, 6)]
-        expectedEdges = [ObjEdge(fst, snd) for (fst, snd) in edgeTuples]
+        expectedEdges = [EdgeImpl(fst, snd) for (fst, snd) in edgeTuples]
         self.assertEqual(box.edges, expectedEdges)

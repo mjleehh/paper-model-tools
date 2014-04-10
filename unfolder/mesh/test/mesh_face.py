@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.obj_mesh import MeshFaces
+from unfolder.mesh.mesh import MeshFaces
 
 
 class MeshFaceTests(TestCase):

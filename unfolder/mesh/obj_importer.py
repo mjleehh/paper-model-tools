@@ -1,4 +1,4 @@
-from unfolder.mesh.obj_mesh_impl import ObjMesh, ObjEdge, ObjFace
+from unfolder.mesh.mesh_impl import MeshImpl, EdgeImpl, FaceImpl
 
 
 class ObjImporter:
@@ -17,7 +17,7 @@ class ObjImporter:
         with open(file) as f:
             for line in f:
                 self._handleLine(line)
-        return ObjMesh(self._faces, self._edges, self._vertices, self._textureCoords)
+        return MeshImpl(self._faces, self._edges, self._vertices, self._textureCoords)
 
     # handlers
 
@@ -27,7 +27,7 @@ class ObjImporter:
     def f(self, *coords):
         textureCoords = self._getTextureCoords(coords)
         edges = self._getEdges(coords)
-        self._faces.append(ObjFace(edges, textureCoords))
+        self._faces.append(FaceImpl(edges, textureCoords))
 
     def vt(self, x, y):
         self._textureCoords.append((float(x), float(y)))
@@ -71,12 +71,12 @@ class ObjImporter:
         return edges
 
     def _addEdge(self, fst, snd):
-        edge = ObjEdge(fst, snd)
+        edge = EdgeImpl(fst, snd)
         key = hash(edge)
         if key in self._edgeMapping:
             return self._edgeMapping[key]
         else:
             index = len(self._edges)
-            self._edges.append(ObjEdge(fst, snd))
+            self._edges.append(EdgeImpl(fst, snd))
             self._edgeMapping[key] = index
             return index

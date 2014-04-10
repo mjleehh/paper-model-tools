@@ -4,7 +4,7 @@ from unfolder.tree.tree_impl import graphToTree
 from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.graph.spanning_trees import SpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.obj_mesh import MeshFaces
+from unfolder.mesh.mesh import MeshFaces
 from unfolder.model.tree_to_model import treeToModel
 
 

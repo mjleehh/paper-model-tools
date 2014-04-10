@@ -1,4 +1,4 @@
-from unfolder.mesh.obj_mesh import Mesh
+from unfolder.mesh.mesh import Mesh
 
 
 class ObjExporter:

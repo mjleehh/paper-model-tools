@@ -1,4 +1,4 @@
-from unfolder.mesh.obj_mesh import MeshEdge, Mesh, MeshFaces
+from unfolder.mesh.mesh import MeshEdge, Mesh, MeshFaces
 from unfolder.model.model_impl import Model
 
 from unfolder.tree.tree_impl import Node

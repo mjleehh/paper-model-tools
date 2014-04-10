@@ -52,10 +52,10 @@ reload(unfolder.mesh)
 
 import unfolder.mesh.maya_mesh
 import unfolder.mesh.obj_importer
-import unfolder.mesh.obj_mesh
+import unfolder.mesh.mesh
 reload(unfolder.mesh.maya_mesh)
 reload(unfolder.mesh.obj_importer)
-reload(unfolder.mesh.obj_mesh)
+reload(unfolder.mesh.mesh)
 
 import unfolder.select_facetree
 reload(unfolder.select_facetree)
