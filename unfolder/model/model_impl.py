@@ -7,14 +7,14 @@ class Model:
 
 
 class ModelPatch:
-    def __init__(self, parentConnectionSet, connectionSets):
-        self.parentConnectionSet = parentConnectionSet
-        self.connectionSets = connectionSets
+    def __init__(self, parentConnections, connections):
+        self.parentConnection = parentConnections
+        self.connections = connections
 
     def __repr__(self):
         res = '('
-        res += 'p = ' + repr(self.parentConnectionSet)
-        res += ', c = ' + repr(self.connectionSets)
+        res += 'p = ' + repr(self.parentConnection)
+        res += ', c = ' + repr(self.connections)
         res += ')'
         return res
 
