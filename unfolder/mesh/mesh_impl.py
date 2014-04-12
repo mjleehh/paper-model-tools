@@ -1,4 +1,4 @@
-class MeshImpl():
+class MeshImpl:
     def __init__(self, faces, edges, vertices, textureCoords):
         self.faces = faces
         self.edges = edges
@@ -6,7 +6,7 @@ class MeshImpl():
         self.textureCoords = textureCoords
 
 
-class FaceImpl():
+class FaceImpl:
     def __init__(self, edges, textureCoords):
         self.edges = edges
         self.textureCoords = textureCoords
@@ -18,7 +18,7 @@ class FaceImpl():
         return res
 
 
-class EdgeImpl():
+class EdgeImpl:
     def __init__(self, fst, snd):
         self.vertices = (fst, snd) if fst < snd else (snd, fst)
 
