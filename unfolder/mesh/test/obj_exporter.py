@@ -5,7 +5,7 @@ from unfolder.mesh.mesh import Mesh
 from unfolder.mesh.mesh_impl import EdgeImpl
 
 
-class ObjImporterTests(TestCase):
+class ObjExporterTests(TestCase):
 
     def test_importObj_box(self):
         reader = ObjImporter()
