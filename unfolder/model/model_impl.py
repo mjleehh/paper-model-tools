@@ -7,9 +7,11 @@ class Model:
 
 
 class ModelPatch:
-    def __init__(self, parentConnections, connections):
+    def __init__(self, name, parentConnections, connections, borderEdges):
+        self.name = name
         self.parentConnection = parentConnections
         self.connections = connections
+        self.borderEdges = borderEdges
 
     def __repr__(self):
         res = '('
