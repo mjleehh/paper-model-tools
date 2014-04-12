@@ -1,6 +1,6 @@
 from unittest import TestCase
+from unfolder.mesh.face import FaceIter
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.mesh import MeshFaces
 
 
 class MeshFacesTests(TestCase):
@@ -10,7 +10,7 @@ class MeshFacesTests(TestCase):
         cls.mesh = reader.read('resources/pyramid.obj')
 
     def setUp(self):
-        self.faces = MeshFaces(self.mesh)
+        self.faces = FaceIter(self.mesh)
 
     def test_len(self):
         self.assertEqual(len(self.faces), 5)

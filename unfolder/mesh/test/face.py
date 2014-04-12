@@ -1,6 +1,6 @@
 from unittest import TestCase
+from unfolder.mesh.face import FaceIter
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.mesh.mesh import MeshFaces
 
 
 class MeshFaceTests(TestCase):
@@ -8,7 +8,7 @@ class MeshFaceTests(TestCase):
     def setUpClass(cls):
         reader = ObjImporter()
         mesh = reader.read('resources/pyramid.obj')
-        cls.faces = MeshFaces(mesh)
+        cls.faces = FaceIter(mesh)
 
     def test_getConnectingEdges(self):
         f = self.faces[1]
@@ -37,7 +37,8 @@ class MeshFaceTests(TestCase):
 
     def test_getVertices(self):
         expectedFaceVertices = [(0.999997, -35.355339, 82.710678), (71.710678, -35.355339, 12.0), (1.0, 35.355339, 12.0)]
-        self.assertEqual(expectedFaceVertices, self.faces[3].getVertices())
+        for index, vertex in enumerate(self.faces[3].vertices):
+            self.assertEqual(vertex, expectedFaceVertices[index])
 
     def test_getNormal(self):
         normal = self.faces[3].getNormal()
