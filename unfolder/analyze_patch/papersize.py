@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 
 from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
-from unfolder.model.model_builder import MeshPatchBuilder
+from unfolder.model.model_builder_old import MeshPatchBuilder
 
 
 def boundingRects(mappingPlaneNormal, vertices):

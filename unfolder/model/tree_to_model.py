@@ -1,5 +1,5 @@
 from unfolder.mesh.face import FaceIter, Face
-from unfolder.model.model_impl import Model, ModelPatch, ModelEdge
+from unfolder.model.model_builder import ModelBuilder
 
 from unfolder.tree.tree_impl import Node
 from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
@@ -12,19 +12,20 @@ def treeToModel(tree: Node, meshFaces):
 # private
 
 class TreeToModelConverter:
-
     def __init__(self, meshFaces: FaceIter, patchBuilder):
         self._meshFaces = meshFaces
         # the model normal
         self.modelBuilder = ModelBuilder((0., 1., 0.))
 
     def convert(self, tree: Node):
+        # make all patch names known
+        for name in tree.getNames():
+            self.modelBuilder.addPatchName(name)
         # the model origin
         origin = (0., 0., 0.)
         fst = (1., 0., 0.)
-        self.vertices = [origin, fst]
         inEdge = self._meshFaces[tree.index].edges[0]
-        initialConnectionEdge = EdgeTransform([inEdge], self.vertices[0], self.vertices[1])
+        initialConnectionEdge = EdgeTransform([inEdge], origin, fst)
 
         self._flattenSubtree(tree, initialConnectionEdge)
         return self.modelBuilder.build()
@@ -38,7 +39,15 @@ class TreeToModelConverter:
             edgeTransform = patchBuilder.addConnection(childFace)
             self._flattenSubtree(child, edgeTransform)
 
+        patchBuilder.build()
+
         #self.modelBuilder.addPatch(face, patchBuilder.build())
+
+    def getEdgeTransform(self, sndFace):
+        inConnectingEdges = self.face.getConnectingEdges(sndFace)
+        begin = self._vertexMapper.mapVertex(inConnectingEdges[0].begin)
+        end = self._vertexMapper.mapVertex(inConnectingEdges[0].end)
+        return EdgeTransform(inConnectingEdges, begin, end)
 
 
 class PatchBuilder:
@@ -47,81 +56,35 @@ class PatchBuilder:
         self._modelBuilder = modelBuilder
         self._vertexMapper = VertexMapper(face, parentEdgeTransform, modelBuilder.normal)
         self._edgeMapping = {}
-        self.gluedFaceIndices = set(face.getConnectedFaces().indices)
-        self.borderEdgeIndices = set(face.edgeIndices)
+        self._connections = []
         self._addEdges()
 
     def addConnection(self, childFace):
-        edgeTransform = self.getEdgeTransform(childFace)
-        inConnectedEdges = self.face.getConnectingEdges(childFace)
-        self.gluedFaceIndices.remove(childFace.index)
-        self.borderEdgeIndices -=  set(inConnectedEdges.indices)
-        return edgeTransform
+        #edgeTransform = self.getEdgeTransform(childFace)
+        inConnectingEdges = self.face.getConnectingEdges(childFace)
+        edgeIndices = [self._edgeMapping[inEdge.index] for inEdge in inConnectingEdges]
+        connectionIndex =  self._modelBuilder.addConnection(edgeIndices)
+        self._connections.append(connectionIndex)
+        return connectionIndex
 
     def addGluedConnection(self, gluedPatchIndex):
         pass
 
-    def getEdgeTransform(self, sndFace):
-        inConnectingEdges = self.face.getConnectingEdges(sndFace)
-        begin = self._vertexMapper.mapVertex(inConnectingEdges[0].begin)
-        end = self._vertexMapper.mapVertex(inConnectingEdges[0].end)
-        return EdgeTransform(inConnectingEdges, begin, end)
-
     def build(self):
-        return ModelPatch(self.face.index, self.parentConnection, self.connections)
+#        PatchImpl(self.face.index, self._connections, None)
+        pass
 
     def _addEdges(self):
-        for edge in self.face.edges:
-            beginIndex = self._addVertex(edge.begin)
-            endIndex = self._addVertex(edge.end)
-            self._modelBuilder.addEdge(ModelEdge(beginIndex, endIndex))
+        for inFaceEdge in self.face.edges:
+            fstVertexIndex = self._addVertex(inFaceEdge.begin)
+            sndVertexIndex = self._addVertex(inFaceEdge.end)
+            edgeIndex = self._modelBuilder.addEdge(fstVertexIndex, sndVertexIndex)
+            self._edgeMapping[inFaceEdge.index] = edgeIndex
 
     def _addVertex(self, inVertex):
         vertex = tuple(self._vertexMapper.mapVertex(inVertex))
         return self._modelBuilder.addVertex(vertex)
 
-class ModelBuilder:
-    def __init__(self, normal):
-        self.normal = normal
-        self.patches = []
-        self.connections = []
-        self.edges = []
-        self.vertices = []
-        self._vertexMapping = {}
-        self._edgeMapping = {}
-
-    def build(self):
-        return Model(self.patches, self.connections, self.edges, self.vertices)
-
-    def addVertex(self, vertex):
-        if vertex in self._vertexMapping:
-            return self._vertexMapping[vertex]
-        else:
-            vertexIndex = len(self.vertices)
-            self.vertices.append(vertex)
-            self._vertexMapping[vertex] = vertexIndex
-            return vertexIndex
-
-    def addEdge(self, edge):
-        if edge in self._edgeMapping:
-            return self._edgeMapping[edge]
-        else:
-            edgeIndex = len(self.edges)
-            self.edges.append(edge)
-            self._edgeMapping[edge] = edgeIndex
-            return edgeIndex
-
-    def addPatch(self, face, patch):
-        patchIndex = len(self.patches)
-        self.patches.append(patch)
-        self._patchMapping[face] = patchIndex
-        return patchIndex
-
-    def getPatchIndex(self, face):
-        if face in self._patchMapping:
-            return self._patchMapping[face]
-        else:
-            return self.addPatch(face, None)
 
 
 class VertexMapper:
@@ -164,7 +127,7 @@ class EdgeTransform:
     origin    the position of the first vertex after mapping
     e1        the normalized edge direction vector after mapping
     """
-    def __init__(self, inEdges, begin, end):
-        self.inEdges = inEdges
+    def __init__(self, connectionIndex, begin, end):
+        self.connectionIndex = connectionIndex
         self.origin = Vector(begin)
         self.e1 = (Vector(end) - begin).normalized()
