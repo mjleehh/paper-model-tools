@@ -1,4 +1,4 @@
-class Model:
+class ModelImpl:
     def __init__(self, patches, connections, edges, vertices):
         self.patches = patches
         self.connections = connections
@@ -6,10 +6,10 @@ class Model:
         self.vertices = vertices
 
 
-class ModelPatch:
-    def __init__(self, name, parentConnections, connections, borderEdges):
+class PatchImpl:
+    def __init__(self, name, parentConnection, connections, borderEdges):
         self.name = name
-        self.parentConnection = parentConnections
+        self.parentConnection = parentConnection
         self.connections = connections
         self.borderEdges = borderEdges
 
@@ -21,7 +21,7 @@ class ModelPatch:
         return res
 
 
-class PatchConnection:
+class ConnectionImpl:
     def __init__(self, fstEdgeIndices, sndEdgeIndices=None):
         # index of first patch < index of second patch
         self._fstEdges = fstEdgeIndices
@@ -42,7 +42,7 @@ class PatchConnection:
         return res
 
 
-class ModelEdge:
+class EdgeImpl:
     def __init__(self, fstVertexIndex, sndVertexIndex):
         self.vertices = (fstVertexIndex, sndVertexIndex) if fstVertexIndex <= sndVertexIndex else (sndVertexIndex, fstVertexIndex)
 
