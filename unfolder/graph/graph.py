@@ -1,5 +1,7 @@
-class Graph:
+from unfolder.graph.edge import Edge
 
+
+class Graph:
     def __init__(self, nodes, edges):
         self.nodes = nodes
         self.edges = edges
@@ -115,7 +117,7 @@ class SpanningTreeBuilder(GraphTraverser):
 
     def newNode(self, nodeIndex, parentIndex):
         if parentIndex is not None:
-            self._edges.append(GraphEdge(parentIndex, nodeIndex))
+            self._edges.append(Edge(parentIndex, nodeIndex))
 
     def done(self, visitedNodes):
         if len(self._edges) != self._graph.numNodes() - 1:
@@ -146,37 +148,6 @@ class ConnectedComponentFinder(GraphTraverser):
     def _addEdge(self, nodeIndex, parentIndex):
         newNodeIndex = self._nodeMap[nodeIndex]
         newParentIndex = self._nodeMap[parentIndex]
-        self._edges.append(GraphEdge(newNodeIndex, newParentIndex))
+        self._edges.append(Edge(newNodeIndex, newParentIndex))
 
 
-class GraphEdge:
-    def __init__(self, fstIndex, sndIndex):
-        if fstIndex == sndIndex:
-            raise ValueError('Loop detected ' + str(fstIndex))
-        self.nodeIndices = (fstIndex, sndIndex) if fstIndex < sndIndex else (sndIndex, fstIndex)
-
-    def hasNode(self, nodeIndex):
-        return self.fst() == nodeIndex or self.snd() == nodeIndex
-
-    def getOther(self, nodeIndex):
-        if self.fst() == nodeIndex:
-            return self.snd()
-        elif self.snd() == nodeIndex:
-            return self.fst()
-        else:
-            return None
-
-    def __eq__(self, other):
-        return self.nodeIndices == other.nodeIndices
-
-    def __hash__(self):
-        return hash(self.nodeIndices)
-
-    def __repr__(self):
-        return str(self.nodeIndices)
-
-    def fst(self):
-        return self.nodeIndices[0]
-
-    def snd(self):
-        return self.nodeIndices[1]

@@ -1,4 +1,6 @@
-from .graph import Graph, GraphEdge
+from unfolder.graph.edge import Edge
+from unfolder.graph.graph import Graph
+
 
 def buildGraph():
     return GraphBuilder()
@@ -41,7 +43,7 @@ class GraphBuilder:
             return index
 
     def _createEdge(self, firstIndex, secondIndex):
-        edge = GraphEdge(firstIndex, secondIndex)
+        edge = Edge(firstIndex, secondIndex)
         if edge in self._edgeMap:
             return self._edgeMap[edge]
         else:
