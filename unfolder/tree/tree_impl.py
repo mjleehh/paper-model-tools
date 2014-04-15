@@ -21,3 +21,9 @@ class Node:
     @property
     def value(self):
         return self._graph.nodes[self.index]
+
+    def getNames(self):
+        ret = [self.value]
+        for child in self:
+            ret += child.getNames()
+        return ret
