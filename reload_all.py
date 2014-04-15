@@ -41,10 +41,10 @@ import unfolder.model
 reload(unfolder.model)
 
 import unfolder.model.patch
-import unfolder.model.model_builder
+import unfolder.model.model_builder_old
 import unfolder.model.face_utils
 reload(unfolder.model.patch)
-reload(unfolder.model.model_builder)
+reload(unfolder.model.model_builder_old)
 reload(unfolder.model.face_utils)
 
 import unfolder.mesh
