@@ -1,5 +1,5 @@
-from unfolder.model.model_impl import Model
+from unfolder.model.model_impl import ModelImpl
 
 
-def calculateModelScore(model: Model):
+def calculateModelScore(model: ModelImpl):
     return 1
