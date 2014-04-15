@@ -54,10 +54,6 @@ class Face:
     def edges(self):
         return FaceEdgeIter(self.index, self.meshImpl)
 
-    @property
-    def edgeIndices(self):
-        return self.impl.edges
-
     def __eq__(self, other):
         return self.index == other.index
 
