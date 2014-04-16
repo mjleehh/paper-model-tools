@@ -1,12 +1,12 @@
 from unfolder.model.model_impl import ModelImpl, EdgeImpl, ConnectionImpl
-from unfolder.util.appenders import IfNewAppender, Appender
+from unfolder.util.appenders import IfNewAppender, MappingAppender
 
 
 class ModelBuilder:
     def __init__(self, normal):
         self.normal = normal
         self.patches = []
-        self.connections = Appender()
+        self.connections = MappingAppender()
         self.edges = IfNewAppender()
         self.vertices = IfNewAppender()
         self._nameMapping = {}
@@ -30,8 +30,9 @@ class ModelBuilder:
         edge = EdgeImpl(fstVertexIndex, sndVertexIndex)
         self.edges.push(edge)
 
-    def addConnection(self, fstEdgeIndices):
-        return self.connections.push(ConnectionImpl(fstEdgeIndices))
+    def addConnection(self, fstPatchName, sndPatchName, fstEdgeIndices):
+        connectionName = self._connectionName(fstPatchName, sndPatchName)
+        return self.connections.push(connectionName, ConnectionImpl(fstEdgeIndices))
 
     def addPatch(self, face, patch):
         patchIndex = len(self.patches)
@@ -39,8 +40,10 @@ class ModelBuilder:
         self._patchMapping[face] = patchIndex
         return patchIndex
 
-    def getPatchIndex(self, face):
-        if face in self._patchMapping:
-            return self._patchMapping[face]
-        else:
-            return self.addPatch(face, None)
+    def getConnection(self, fstPatchName, sndPatchName):
+        connectionName = self._connectionName(fstPatchName, sndPatchName)
+        return self.connections[connectionName]
+
+    @staticmethod
+    def _connectionName(self, fstName, sndName):
+        return (sndName, fstName) if sndName > fstName else (fstName, sndName)
