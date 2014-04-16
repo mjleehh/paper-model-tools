@@ -27,43 +27,46 @@ class TreeToModelConverter:
         inEdge = self._meshFaces[tree.index].edges[0]
         initialConnectionEdge = EdgeTransform([inEdge], origin, fst)
 
-        self._flattenSubtree(tree, initialConnectionEdge)
+        self._flattenSubtree(tree, None)
         return self.modelBuilder.build()
 
-    def _flattenSubtree(self, subtree, parentEdgeTransform):
-        face = self._meshFaces[subtree.value]
-        patchBuilder = PatchBuilder(face, parentEdgeTransform, self.modelBuilder)
+    def _flattenSubtree(self, subtree, parentFace):
+        thisFace = self._meshFaces[subtree.value]
+        patchBuilder = PatchBuilder(thisFace, parentFace, self.modelBuilder)
 
         for child in subtree:
             childFace = self._meshFaces[child.value]
-            edgeTransform = patchBuilder.addConnection(childFace)
-            self._flattenSubtree(child, edgeTransform)
+            childConnectionIndex = patchBuilder.addConnection(childFace)
+            self._flattenSubtree(child, thisFace)
 
         patchBuilder.build()
 
         #self.modelBuilder.addPatch(face, patchBuilder.build())
 
-    def getEdgeTransform(self, sndFace):
-        inConnectingEdges = self.face.getConnectingEdges(sndFace)
-        begin = self._vertexMapper.mapVertex(inConnectingEdges[0].begin)
-        end = self._vertexMapper.mapVertex(inConnectingEdges[0].end)
-        return EdgeTransform(inConnectingEdges, begin, end)
-
-
 class PatchBuilder:
-    def __init__(self, face: Face, parentEdgeTransform, modelBuilder):
+    def __init__(self, face: Face, parentFace, modelBuilder: ModelBuilder):
         self.face = face
         self._modelBuilder = modelBuilder
-        self._vertexMapper = VertexMapper(face, parentEdgeTransform, modelBuilder.normal)
+        self._vertexMapper = self._getVertexMapper(parentFace)
         self._edgeMapping = {}
         self._connections = []
         self._addEdges()
 
+    def _getVertexMapper(self, parentFace):
+        faceNormal = self._modelBuilder.normal
+        modelNormal = self._modelBuilder.normal
+        if parentFace:
+            inConnectingEdge = self.face.getConnectingEdges(parentFace)[0]
+            edgeIndex = self._modelBuilder.getConnection(self.face.index, parentFace.index).fstEdgeIndices[0]
+            edge = self._modelBuilder.edges[edgeIndex]
+            VertexMapper(faceNormal, inConnectingEdge, modelNormal)
+        else:
+            VertexMapper(faceNormal, self.face.edges[0], modelNormal)
+
     def addConnection(self, childFace):
-        #edgeTransform = self.getEdgeTransform(childFace)
         inConnectingEdges = self.face.getConnectingEdges(childFace)
         edgeIndices = [self._edgeMapping[inEdge.index] for inEdge in inConnectingEdges]
-        connectionIndex =  self._modelBuilder.addConnection(edgeIndices)
+        connectionIndex =  self._modelBuilder.addConnection(self.face.index, childFace.index, edgeIndices)
         self._connections.append(connectionIndex)
         return connectionIndex
 
@@ -88,21 +91,7 @@ class PatchBuilder:
 
 
 class VertexMapper:
-    def __init__(self, inFace, connectingEdges, normal):
-        self._inFaceCoordinateSystem = self._getInFaceCoordinateSystemAtEdge(inFace, connectingEdges.inEdges[0])
-        self._patchCoordinateSystem = self._getPatchCoordinateSystem(normal, connectingEdges)
-
-    def mapVertex(self, vertex):
-        faceCoords = self._inFaceCoordinateSystem.toLocal(vertex)
-        patchCoords = self._patchCoordinateSystem.toGlobal(faceCoords)
-        return patchCoords
-
-    def _getPatchCoordinateSystem(self, modelNormal, connectionEdge):
-        e2 = connectionEdge.e1 ^ modelNormal
-        return PlaneCoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
-
-    def _getInFaceCoordinateSystemAtEdge(self, inFace, inEdge):
-        """ Determine the 2D coordinate system for one of the face edges
+    """ Determine the 2D coordinate system for one of the face edges
 
         The 2d coordinate system spans the face plane:
         - the origin is the first vertex of the edge
@@ -113,21 +102,20 @@ class VertexMapper:
         Faces in maya have counter clockwise vertex order. Thus e_2 faces
         'into' the face area. The three vectors (e_1, e_2, n) for right handed
         coordinates for the 3D space (e_1 x e_2 = n).
-        """
-        e1 = inEdge.direction.normalized()
-        faceNormal = inFace.getNormal()
-        e2 = (e1 ^ faceNormal).normalized()
-        return PlaneCoordinateSystem(inEdge.begin, e1, e2)
-
-
-class EdgeTransform:
-    """ The edge that connects two faces.
-
-    inEdges   the unmapped edges
-    origin    the position of the first vertex after mapping
-    e1        the normalized edge direction vector after mapping
     """
-    def __init__(self, connectionIndex, begin, end):
-        self.connectionIndex = connectionIndex
-        self.origin = Vector(begin)
-        self.e1 = (Vector(end) - begin).normalized()
+    def __init__(self, faceNormal, inEdge, modelNormal, mappedEdge):
+        self._inFaceCoordinateSystem = self._getCoordinateSystemForEdge(inEdge, faceNormal)
+        self._patchCoordinateSystem = self._getCoordinateSystemForEdge(mappedEdge, modelNormal)
+
+    def mapVertex(self, vertex):
+        faceCoords = self._inFaceCoordinateSystem.toLocal(vertex)
+        patchCoords = self._patchCoordinateSystem.toGlobal(faceCoords)
+        return patchCoords
+
+    def _getCoordinateSystemForEdge(self, edge, normal):
+        origin = edge.begin
+        e1 = edge.direction.normalized()
+        e2 = (e1 ^ normal).normalized()
+        return PlaneCoordinateSystem(origin, e1, e2)
+
+class PatchEdgeProxy()
