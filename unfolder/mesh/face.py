@@ -25,7 +25,8 @@ class Face:
                         faceIndices.append(otherFaceIndex)
         return FaceSubsetIter(faceIndices, self.meshImpl)
 
-    def getNormal(self):
+    @property
+    def normal(self):
         e1 = self.edges[0].direction
         e2 = self.edges[1].direction
         return (e1 ^ e2).normalized()
