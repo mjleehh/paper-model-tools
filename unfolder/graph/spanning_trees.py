@@ -1,5 +1,11 @@
 from unfolder.graph.graph import Graph
-from unfolder.graph.graph_impl import GraphImpl
+
+
+def getSpanningTrees(graph: Graph):
+    return SpanningTreeIter(graph)
+
+
+# private
 
 
 class SpanningTreeIter:
