@@ -3,7 +3,7 @@ import maya.OpenMaya as om
 from .state import State
 from unfolder.model.model_builder_old import MeshPatchBuilder
 
-from unfolder.tree.tree import TreeNode
+from unfolder.tree.tree import Tree
 from unfolder.select_facetree.states.util import getEventPosition, \
     getSelectedFace
 
@@ -47,6 +47,6 @@ class SelectInitialFace(State):
     def _nextState(self):
         selectedFace = getSelectedFace(self._dagPath)
         if selectedFace:
-            return self._stateFactory.addFacesToStrip(self.reset, self._dagPath, MeshPatchBuilder(), TreeNode(selectedFace))
+            return self._stateFactory.addFacesToStrip(self.reset, self._dagPath, MeshPatchBuilder(), Tree(selectedFace))
         else:
             return None
