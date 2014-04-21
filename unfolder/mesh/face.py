@@ -4,8 +4,8 @@ from unfolder.mesh.mesh_impl import MeshImpl
 
 class Face:
     def __init__(self, index, meshImpl: MeshImpl):
-        self.meshImpl = meshImpl
         self.index = index
+        self.meshImpl = meshImpl
 
     def getConnectingEdges(self, otherFace):
         faceEdgeIndices = []
