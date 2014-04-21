@@ -1,31 +1,39 @@
+from unfolder.graph.graph_impl import GraphImpl
+from unfolder.graph.node import Node
+
+
 class Edge:
-    def __init__(self, fstIndex, sndIndex):
-        if fstIndex == sndIndex:
-            raise ValueError('Loop detected ' + str(fstIndex))
-        self.nodeIndices = (fstIndex, sndIndex) if fstIndex < sndIndex else (sndIndex, fstIndex)
+    def __init__(self, index, graphImpl: GraphImpl):
+        self.index = index
+        self.graphImpl = graphImpl
 
-    def hasNode(self, nodeIndex):
-        return self.fst() == nodeIndex or self.snd() == nodeIndex
+    @property
+    def nodes(self):
+        return [Node(nodeIndex, self.graphImpl) for nodeIndex in self.impl.nodes]
 
-    def getOther(self, nodeIndex):
-        if self.fst() == nodeIndex:
-            return self.snd()
-        elif self.snd() == nodeIndex:
-            return self.fst()
-        else:
-            return None
+    @property
+    def impl(self):
+        return self.graphImpl.edges[self.index]
 
-    def __eq__(self, other):
-        return self.nodeIndices == other.nodeIndices
 
-    def __hash__(self):
-        return hash(self.nodeIndices)
+# private
 
-    def __repr__(self):
-        return str(self.nodeIndices)
 
-    def fst(self):
-        return self.nodeIndices[0]
+class EdgeIter:
+    def __init__(self, graphImpl: GraphImpl):
+        self.graphImpl = graphImpl
 
-    def snd(self):
-        return self.nodeIndices[1]
+    def __iter__(self):
+        for edgeIndex, val in enumerate(self.graphImpl.edges):
+            yield self._item(edgeIndex)
+
+    def __len__(self):
+        return len(self.graphImpl.edges)
+
+    def __getitem__(self, item):
+        return self._item(item)
+
+    # private
+
+    def _item(self, edgeIndex):
+        return Edge(edgeIndex, self.graphImpl)
