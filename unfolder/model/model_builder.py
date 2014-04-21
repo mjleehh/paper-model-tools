@@ -1,49 +1,43 @@
-from unfolder.model.model_impl import ModelImpl, EdgeImpl, ConnectionImpl
-from unfolder.util.appenders import IfNewAppender, MappingAppender
+from unfolder.model.model_impl import ModelImpl, EdgeImpl, ConnectionImpl, \
+    PatchImpl
+from unfolder.util.appenders import IfNewAppender, MappingAppender, Appender, \
+    BucketFiller
 
 
 class ModelBuilder:
     def __init__(self, normal):
         self.normal = normal
-        self.patches = []
+        self.patches = BucketFiller()
         self.connections = MappingAppender()
         self.edges = IfNewAppender()
         self.vertices = IfNewAppender()
         self._nameMapping = {}
 
     def build(self):
-        return ModelImpl(self.patches, self.connections, self.edges, self.vertices)
-
-    def addPatchName(self, patchName):
-        if patchName in self._nameMapping:
-            return self._nameMapping[patchName]
-        else:
-            index = len(self.patches)
-            self.patches.append(None)
-            self._nameMapping[patchName] = index
-            return index
+        return ModelImpl(self.patches.store, None, self.connections.store, self.edges.store, self.vertices.store)
 
     def addVertex(self, vertex):
         return self.vertices.push(vertex)
 
     def addEdge(self, fstVertexIndex, sndVertexIndex):
         edge = EdgeImpl(fstVertexIndex, sndVertexIndex)
-        self.edges.push(edge)
+        return self.edges.push(edge)
 
-    def addConnection(self, fstPatchName, sndPatchName, fstEdgeIndices):
+    def addConnection(self, fstPatchName, sndPatchName, edgeIndices):
         connectionName = self._connectionName(fstPatchName, sndPatchName)
-        return self.connections.push(connectionName, ConnectionImpl(fstEdgeIndices))
+        return self.connections.push(connectionName, edgeIndices)
 
-    def addPatch(self, face, patch):
-        patchIndex = len(self.patches)
-        self.patches.append(patch)
-        self._patchMapping[face] = patchIndex
-        return patchIndex
+    def addPatch(self, patch: PatchImpl):
+        return self.patches.put(patch.name, patch)
 
     def getConnection(self, fstPatchName, sndPatchName):
         connectionName = self._connectionName(fstPatchName, sndPatchName)
         return self.connections[connectionName]
 
+    def getConnectionIndex(self, fstPatchName, sndPatchName):
+        connectionName = self._connectionName(fstPatchName, sndPatchName)
+        return self.connections.indexOf(connectionName)
+
     @staticmethod
-    def _connectionName(self, fstName, sndName):
+    def _connectionName(fstName, sndName):
         return (sndName, fstName) if sndName > fstName else (fstName, sndName)
