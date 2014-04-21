@@ -1,4 +1,3 @@
-from unfolder.graph.graph import Graph
 from unfolder.graph.graph_impl import EdgeImpl, GraphImpl
 
 
@@ -58,4 +57,4 @@ class GraphBuilder:
             return index
 
     def toGraph(self):
-        return Graph(GraphImpl(self._nodes, self._edges))
+        return GraphImpl(self._nodes, self._edges)
