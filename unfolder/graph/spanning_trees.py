@@ -1,17 +1,20 @@
+from unfolder.graph.graph import Graph
+from unfolder.graph.graph_impl import GraphImpl
 
-class SpanningTrees:
 
-    def __init__(self, graph):
-        self.graph = graph.clone()
-        self.graph.edges.sort(key = lambda edge: edge.fst())
+class SpanningTreeIter:
+
+    def __init__(self, graph: Graph):
+        self.graph = graph.copy().impl
+        self.graph.edges.sort(key=lambda edge: edge.nodes[0])
 
         # initial tree
-        self.T_0 = graph.getSpanningTree()
+        self.T_0 = graph.getSpanningTree().impl
 
-        self._entrablesForSpanningTreeEdge = Entrables(self.T_0, graph).getEntrablesForSpanningTreeEdge
+        self._entrablesForSpanningTreeEdge = Entrables(self.T_0, self.graph).getEntrablesForSpanningTreeEdge
 
     def __iter__(self):
-        V = self.T_0.numEdges()
+        V = len(self.T_0.edges)
         yield self.T_0
         for T in self._derivedSpanningTrees(self.T_0, V - 1):
             yield T
@@ -21,7 +24,7 @@ class SpanningTrees:
             e_k = self.T_0.edges[k]
             for g in self._entrablesForSpanningTreeEdge(T_p, e_k):
                 T_c = self._replaceEdge(T_p, e_k, g)
-                if T_c and T_c.isTree():
+                if T_c and Graph(T_c).isTree():
                     yield T_c
                     for T in self._derivedSpanningTrees(T_c, k - 1):
                         yield T
@@ -29,35 +32,38 @@ class SpanningTrees:
                 yield T
 
     def _replaceEdge(self, T_p, e_k, g):
-        T_c = T_p.clone()
+        T_c = Graph(T_p).copy().impl
         index = T_c.edges.index(e_k)
         T_c.edges[index] = g
         return T_c
 
 
+# private
+
+
 class FundamentalCuts:
 
-    def __init__(self, graph):
+    def __init__(self, graph: Graph):
         self._allEdges = set(graph.edges)
 
     def getCutFromSpanningTreeEdge(self, spanningTree, cutEdge):
         if not cutEdge in spanningTree.edges:
             raise ValueError('edge ' + str(cutEdge) + ' is not in spanning tree ' + str(spanningTree))
-        newTree = spanningTree.clone()
+        newTree = Graph(spanningTree).copy().impl
         candidateEdges = self._allEdges - set(newTree.edges)
 
         res = []
         cutEdgeIndex = newTree.edges.index(cutEdge)
         for edge in candidateEdges:
             newTree.edges[cutEdgeIndex] = edge
-            if newTree.isTree():
+            if Graph(newTree).isTree():
                 res.append(edge)
         return set(res)
 
 
 class Entrables:
 
-    def __init__(self, initialTree, graph):
+    def __init__(self, initialTree, graph: Graph):
         self._initialTree = initialTree
         self._initialTreeCutCache = {}
         self._getFundamentalCut = FundamentalCuts(graph).getCutFromSpanningTreeEdge
