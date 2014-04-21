@@ -1,83 +1,56 @@
-from unfolder.util.plane_coordinate_system import PlaneCoordinateSystem
+from unfolder.model.model_impl import ModelImpl, PatchImpl
+from unfolder.util.appenders import StackBuckets
 
-from .face_utils import *
 
-
-class ConnectionEdge:
-    """ The edge that connects two faces.
-
-    index   the index of the edge in the mesh
-    origin  the position of the first vertex after mapping
-    e1      the normalized edge direction vector after mapping
-    """
-    def __init__(self, index, origin, e1):
+class Patch:
+    def __init__(self, index, modelImpl: ModelImpl):
         self.index = index
-        self.origin = origin
-        self.e1 = e1
+        self.modelImpl = modelImpl
 
-def flattenTree(dagPath, tree, patchBuilder):
-    return PatchBuilder(dagPath, patchBuilder).buildPatch(tree)
-
-
-class PatchBuilder:
-
-    def __init__(self, dagPath, patchBuilder):
-        self._dagPath = dagPath
-        self._patchBuilder = patchBuilder
-
-    def buildPatch(self, tree):
-
-        polyIter = om.MItMeshPolygon(self._dagPath)
-        setIter(polyIter, tree.face)
-        edges = om.MIntArray()
-        polyIter.getEdges(edges)
-        initialEdge = edges[0]
-
-        mappingPlaneOrigin = om.MVector(0, 0, 0)
-        mappingPlaneNormal = om.MVector(0, 1, 0)
-        mappedInitialEdgeDirection = om.MVector(1, 0, 0)
-        initialConnectionEdge = ConnectionEdge(initialEdge, mappingPlaneOrigin, mappedInitialEdgeDirection)
-
-        self._flattenSubtree(tree, initialConnectionEdge, mappingPlaneNormal)
+    @property
+    def patchEdges(self):
+        edgesByVertex = self._getEdgesByVertex()
+        #print(next(iter(edgesByVertex.items())))
 
 
-    def _flattenSubtree(self, subtree, connectionEdge, mappingPlaneNormal):
-        def mapVertex(vertexIndex):
-            vertexIter = om.MItMeshVertex(self._dagPath)
-            setIter(vertexIter, vertexIndex)
-            vertex = vertexIter.position()
-            localPosition = localCoordinateSystem.toLocal(vertex)
-            globalPosition = globalCoodinateSystem.toGlobal(localPosition)
-            return om.MPoint(globalPosition)
 
-        def createFace():
-            edgeCycles = getEdgeCycles(faceIndex, self._dagPath)
-            newVertices = om.MPointArray()
-            for edgeCycle in edgeCycles:
-                vertexCycle = getVertexCycle(edgeCycle, self._dagPath)
-                for vertexIndex in vertexCycle:
-                    newVertices.append(mapVertex(vertexIndex))
-            self._patchBuilder.addFace(faceIndex, newVertices)
+    def _getEdgesByVertex(self):
+        def addEdge(connectionIndex):
+            for edgeIndex in self.modelImpl.connections[connectionIndex]:
+                (fstVertex, sndVertex) = self.modelImpl.edges[edgeIndex].vertices
+                buckets.push(fstVertex, edgeIndex)
+                buckets.push(sndVertex, edgeIndex)
 
-        def getConnectionEdgeForEdge(edgeIndex):
-            edgeIter = om.MItMeshEdge(self._dagPath)
-            setIter(edgeIter, edgeIndex)
-            begin = mapVertex(edgeIter.index(0))
-            end = mapVertex(edgeIter.index(1))
-            e1 = end - begin
-            e1.normalize()
-            return ConnectionEdge(edgeIndex, begin, e1)
+        buckets = StackBuckets()
+        if self.impl.parentConnection:
+            addEdge(self.impl.parentConnection)
+        for connection in self.impl.connections:
+            addEdge(connection)
+        return buckets.store
 
-        faceIndex = subtree.face
-        localCoordinateSystem = getFacePlaneCoordinateSystemForFaceEdge(connectionEdge.index, faceIndex, self._dagPath)
-        e2 = connectionEdge.e1 ^ mappingPlaneNormal
-        globalCoodinateSystem = PlaneCoordinateSystem(connectionEdge.origin, connectionEdge.e1, e2)
-
-        createFace()
-
-        for child in subtree.children:
-            sharedEdge = getSharedEdge(faceIndex, child.face, self._dagPath)
-            connectionEdge = getConnectionEdgeForEdge(sharedEdge)
-            self._flattenSubtree(child, connectionEdge, mappingPlaneNormal)
+    @property
+    def impl(self):
+        return self.modelImpl.patches[self.index]
 
 
+# private
+
+
+class PatchIter:
+    def __init__(self, modelImpl: ModelImpl):
+        self.modelImpl = modelImpl
+
+    def __iter__(self):
+        for patchIndex, val in enumerate(self.modelImpl.patches):
+            yield self._item(patchIndex)
+
+    def __len__(self):
+        return len(self.modelImpl.patches)
+
+    def __getitem__(self, patchIndex):
+        return self._item(patchIndex)
+
+    # private
+
+    def _item(self, patchIndex):
+        return Patch(patchIndex, self.modelImpl)
