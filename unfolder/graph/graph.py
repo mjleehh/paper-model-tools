@@ -1,153 +1,97 @@
-from unfolder.graph.edge import Edge
+from unfolder.graph.edge import EdgeIter
+from unfolder.graph.graph_impl import GraphImpl, EdgeImpl
+from unfolder.graph.traverser_graph import traverseGraph, GraphAnalyzer
+from unfolder.graph.node import Node
 
 
 class Graph:
-    def __init__(self, nodes, edges):
-        self.nodes = nodes
-        self.edges = edges
+    def __init__(self, impl: GraphImpl):
+        self.impl = impl
+
+    @property
+    def edges(self):
+        return EdgeIter(self.impl)
+
+    @property
+    def nodes(self):
+        return self.impl.nodes
+
+    def copy(self):
+        return Graph(GraphImpl(self.impl.nodes[:], self.impl.edges[:]))
 
     def isEmpty(self):
-        return not self.nodes
-
-    def numNodes(self):
-        return len(self.nodes)
-
-    def numEdges(self):
-        return len(self.edges)
+        return not self.impl.nodes
 
     def isConnected(self):
         return len(self.getConnectedComponents()) == 1
 
-    def nodeIndex(self, node):
-        return self.nodes.index(node)
-
-    def edgeIndex(self, edge):
-        return self.edges.index(edge)
-
-    def clone(self):
-        return Graph(self.nodes[:], self.edges[:])
-
     def isTree(self):
-        return self.isEmpty() or self._traverse(TreeChecker())
+        return self.isEmpty() or traverseGraph(TreeChecker(), self.impl)
 
     def getSpanningTree(self):
         if self.isEmpty():
-            return Graph([], [])
+            return Graph(GraphImpl([], []))
         else:
-            return self._traverse(SpanningTreeBuilder(self))
+            return traverseGraph(SpanningTreeBuilder(self), self.impl)
 
     def getConnectedComponents(self):
         retval = []
-        remainingNodes = set(self.nodes)
+        remainingNodes = set(self.impl.nodes)
         while remainingNodes:
-            rootIndex = self.nodes.index(next(iter(remainingNodes)))
-            graph = self._traverse(ConnectedComponentFinder(self), rootIndex)
-            remainingNodes -= set(graph.nodes)
+            rootIndex = self.impl.nodes.index(next(iter(remainingNodes)))
+            graph = traverseGraph(ConnectedComponentFinder(self), self.impl, Node(rootIndex, self.impl))
+            remainingNodes -= set(graph.impl.nodes)
             retval.append(graph)
         return retval
 
 
-    def __repr__(self):
-        retval = 'G = (\n  V = {'
-        delim = ''
-        for node in self.nodes:
-            retval += delim + repr(node)
-            delim = ', '
-        retval += '},\n  E = {'
-        delim = ''
-        for edge in self.edges:
-            retval += delim + repr(edge)
-            delim = ', '
-        retval += "}\n)"
-        return retval
-
-    # private
-
-    def _getConnectedNodeIndices(self, nodeIndex):
-        return [edge.getOther(nodeIndex) for edge in self.edges if edge.hasNode(nodeIndex)]
-
-    def _traverse(self, f, rootNodeIndex = 0):
-        def traverseFromNode(nodeIndex, parentIndex):
-            if visitedNodes[nodeIndex]:
-                f.cycle(nodeIndex, parentIndex)
-            else:
-                visitedNodes[nodeIndex] = True
-                f.newNode(nodeIndex, parentIndex)
-                for connectedNodeIndex in self._getConnectedNodeIndices(nodeIndex):
-                    if connectedNodeIndex != parentIndex:
-                        traverseFromNode(connectedNodeIndex, nodeIndex)
-
-        visitedNodes = [False] * len(self.nodes)
-        try:
-            traverseFromNode(rootNodeIndex, None)
-            return f.done(visitedNodes)
-        except StopGraphTraversal as s:
-            return s.result
+# private
 
 
-class StopGraphTraversal(Exception):
-    def __init__(self, result):
-        Exception.__init__(self)
-        self.result = result
-
-
-class GraphTraverser:
-    def cycle(self, nodeIndex, parentIndex):
-        pass
-
-    def newNode(self, nodeIndex, parentIndex):
-        pass
-
-    def done(self, visitedNodes):
-        pass
-
-
-class TreeChecker(GraphTraverser):
-    def cycle(self, nodeIndex, parentIndex):
-        raise StopGraphTraversal(False)
+class TreeChecker(GraphAnalyzer):
+    def cycle(self, node, parent):
+        self._stop(False)
 
     def done(self, visitedNodes):
         return all(visitedNodes)
 
 
-class SpanningTreeBuilder(GraphTraverser):
+class SpanningTreeBuilder(GraphAnalyzer):
     def __init__(self, graph):
         self._graph = graph
         self._edges = []
 
-    def newNode(self, nodeIndex, parentIndex):
-        if parentIndex is not None:
-            self._edges.append(Edge(parentIndex, nodeIndex))
+    def newNode(self, node, parent):
+        if parent is not None:
+            self._edges.append(EdgeImpl(parent.index, node.index))
 
     def done(self, visitedNodes):
-        if len(self._edges) != self._graph.numNodes() - 1:
+        if len(self._edges) != len(self._graph.nodes) - 1:
             raise ValueError('Error graph ' + repr(self._graph) + ' is not connected')
-        return Graph(self._graph.nodes, self._edges)
+        return Graph(GraphImpl(self._graph.nodes, self._edges))
 
 
-class ConnectedComponentFinder(GraphTraverser):
+class ConnectedComponentFinder(GraphAnalyzer):
     def __init__(self, graph):
-        self._allNodes = graph.nodes
+        self._allNodes = graph.impl.nodes
         self._nodes = []
         self._nodeMap = {}
         self._edges = []
 
-    def cycle(self, nodeIndex, parentIndex):
-        self._addEdge(nodeIndex, parentIndex)
+    def cycle(self, node, parent):
+        self._addEdge(node, parent)
 
-    def newNode(self, nodeIndex, parentIndex):
+    def newNode(self, node, parent):
         newIndex = len(self._nodes)
-        self._nodes.append(self._allNodes[nodeIndex])
-        self._nodeMap[nodeIndex] = newIndex
-        if parentIndex is not None:
-            self._addEdge(nodeIndex, parentIndex)
+        self._nodes.append(self._allNodes[node.index])
+        self._nodeMap[node.index] = newIndex
+        if parent is not None:
+            self._addEdge(node, parent)
 
     def done(self, visitedNodes):
-        return Graph(self._nodes, self._edges)
+        return Graph(GraphImpl(self._nodes, self._edges))
 
-    def _addEdge(self, nodeIndex, parentIndex):
-        newNodeIndex = self._nodeMap[nodeIndex]
-        newParentIndex = self._nodeMap[parentIndex]
-        self._edges.append(Edge(newNodeIndex, newParentIndex))
-
-
+    def _addEdge(self, node, parent):
+        newNodeIndex = self._nodeMap[node.index]
+        newParentIndex = self._nodeMap[parent.index]
+        self._edges.append(EdgeImpl(newNodeIndex, newParentIndex))
