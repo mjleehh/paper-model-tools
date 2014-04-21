@@ -1,7 +1,7 @@
 import maya.OpenMaya as om
 
 from unfolder.util.helpers import setIter
-from unfolder.tree.tree import TreeNode
+from unfolder.tree.tree import Tree
 
 
 def createFacetreeLightning(dagPath, connectedFaces):
@@ -26,7 +26,7 @@ def createFacetreeLightning(dagPath, connectedFaces):
             setIter(faceIter, connectedFace)
             children.append(extractConnectedFaces(faceIter, remainingFaces))
 
-        node = TreeNode(face)
+        node = Tree(face)
         node.children = children
         return node
 
@@ -69,7 +69,7 @@ def createFacetreeSpiral(dagPath, connectedFaces):
     print("duplicating model")
     initialFace = connectedFaces[0]
     remainingFaces = set(connectedFaces[1:])
-    tree = TreeNode(initialFace)
+    tree = Tree(initialFace)
     while remainingFaces:
         traverseTreeStub(tree, remainingFaces)
     print("duplicating model ... done")
@@ -107,7 +107,7 @@ def createFacetreeSelectionOrder(dagPath, orderedSelectedFaces):
     print("duplicating model")
     initialFace = orderedSelectedFaces[0]
     remainingFaces = orderedSelectedFaces[1:]
-    tree = TreeNode(initialFace)
+    tree = Tree(initialFace)
     while remainingFaces:
         addNextFaceStripToSubtree(tree, remainingFaces)
     print("duplicating model ... done")
