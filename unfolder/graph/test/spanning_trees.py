@@ -1,7 +1,5 @@
 from unittest import TestCase
-from unfolder.graph.graph import GraphEdge
-from unfolder.graph.graph_builder import GraphBuilder
-from unfolder.graph.spanning_trees import SpanningTrees
+from unfolder.graph.spanning_trees import SpanningTreeIter
 from unfolder.graph.test.sample_graphs import createGraphWithTreeSpanningTrees, createSimpleGraph, \
     createSingularGraph, createPrimitiveGraph, createEmptyGraph, \
     createSimpleTree, createDiamondGraph
@@ -23,7 +21,7 @@ class TestSpanningTrees(TestCase):
         for testCase in testCases:
             (graph, numSpanningTrees) = testCase
 
-            spanningTreeEdgeSets = [frozenset(spanningTree.edges) for spanningTree in SpanningTrees(graph)]
+            spanningTreeEdgeSets = [frozenset(spanningTree.edges) for spanningTree in SpanningTreeIter(graph)]
 
             # check for correct number of spanning trees
             self.assertEqual(len(spanningTreeEdgeSets), numSpanningTrees)
