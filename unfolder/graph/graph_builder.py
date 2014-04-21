@@ -1,5 +1,5 @@
-from unfolder.graph.edge import Edge
 from unfolder.graph.graph import Graph
+from unfolder.graph.graph_impl import EdgeImpl, GraphImpl
 
 
 def buildGraph():
@@ -30,7 +30,10 @@ class GraphBuilder:
         return [self._edges[edgeIndex] for edgeIndex in self._edgeLists[nodeIndex]]
 
     def _getConnectedNodes(self, nodeIndex):
-        return [edge.getOther(nodeIndex) for edge in self._getConnectedEdges(nodeIndex)]
+        def getOther(edge, nodeIndex):
+            nodes = edge.nodes
+            return nodes[not nodes.index(nodeIndex)]
+        return [getOther(edge, nodeIndex) for edge in self._getConnectedEdges(nodeIndex)]
 
     def _createNode(self, value):
         if value in self._nodeMap:
@@ -43,7 +46,7 @@ class GraphBuilder:
             return index
 
     def _createEdge(self, firstIndex, secondIndex):
-        edge = Edge(firstIndex, secondIndex)
+        edge = EdgeImpl(firstIndex, secondIndex)
         if edge in self._edgeMap:
             return self._edgeMap[edge]
         else:
@@ -55,4 +58,4 @@ class GraphBuilder:
             return index
 
     def toGraph(self):
-        return Graph(self._nodes, self._edges)
+        return Graph(GraphImpl(self._nodes, self._edges))
