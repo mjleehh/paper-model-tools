@@ -1,7 +1,9 @@
-def meshToGraph(faces, graphBuilder):
+from unfolder.graph.graph import Graph
+
+
+def meshToGraph(faces, graphBuilder) -> Graph:
 
     for face in faces:
         connectedFaceIndices = face.getConnectedFaces().indices
         graphBuilder.addNode(face.index, connectedFaceIndices)
-
-    return graphBuilder.toGraph()
+    return Graph(graphBuilder.toGraph())
