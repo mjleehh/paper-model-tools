@@ -1,6 +1,7 @@
 class ModelImpl:
-    def __init__(self, patches, connections, edges, vertices):
+    def __init__(self, patches, shadowPatches, connections, edges, vertices):
         self.patches = patches
+        self.shadowPatches = shadowPatches
         self.connections = connections
         self.edges = edges
         self.vertices = vertices
@@ -22,25 +23,22 @@ class PatchImpl:
 
 
 class ConnectionImpl:
-    def __init__(self, fstEdgeIndices, sndEdgeIndices=None):
+    def __init__(self, edges):
         # index of first patch < index of second patch
-        self._fstEdges = fstEdgeIndices
-        self._sndEdges = sndEdgeIndices
-
-    @property
-    def isGlued(self):
-        return self._sndEdges is not None
+        self.edges = edges
 
     def __repr__(self):
         res = '('
-        if self.isGlued:
-            res += 'E1 = ' + repr(self._fstEdges)
-            res += ', E2 = ' + repr(self._sndEdges)
-        else:
-            res += 'E = ' + repr(self._fstEdges)
+        res += 'E = ' + repr(self.edges)
         res += ')'
         return res
 
+
+class ShadowPatchImpl:
+    def __init__(self, patch, parentConnection, vertices):
+        self.patch = patch
+        self.parentConnection = parentConnection
+        self.vertices = vertices
 
 class EdgeImpl:
     def __init__(self, fstVertexIndex, sndVertexIndex):
