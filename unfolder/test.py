@@ -2,9 +2,10 @@ import cProfile
 from unfolder.analyze_patch.model_score import calculateModelScore
 from unfolder.automatic_unfold.mesh_to_graph import meshToGraph
 from unfolder.mesh.face import FaceIter
-from unfolder.tree.tree_impl import graphToTree
+from unfolder.output.model_to_mesh import modelToMesh
+from unfolder.tree.knot import graphToTree
 from unfolder.graph.graph_builder import GraphBuilder
-from unfolder.graph.spanning_trees import SpanningTrees
+from unfolder.graph.spanning_trees import SpanningTreeIter, getSpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter
 from unfolder.model.tree_to_model import treeToModel
 
@@ -29,11 +30,13 @@ def convert(filename):
     for connectedComponent in graph.getConnectedComponents():
         # iterate all spanning trees of the graph
         # each spanning tree corresponds to one of the possible models
-        for index, spanningTree in enumerate(SpanningTrees(connectedComponent)):
+        for index, spanningTree in enumerate(getSpanningTrees(connectedComponent)):
             print('spanningTree no %i' % index)
             tree = graphToTree(spanningTree)
             model = treeToModel(tree, faces)
-            score = calculateModelScore(model)
+            #score = calculateModelScore(model)
+            output = modelToMesh(model)
+
 
 #convert('mesh/test/resources/box.obj')
 convert('mesh/test/resources/box.obj')
