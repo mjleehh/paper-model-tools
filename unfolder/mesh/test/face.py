@@ -41,9 +41,9 @@ class MeshFaceTests(TestCase):
             self.assertEqual(vertex, expectedFaceVertices[index])
 
     def test_getNormal(self):
-        normal = self.faces[3].getNormal()
+        normal = self.faces[3].normal
         print(normal)
-        normal = self.faces[0].getNormal()
+        normal = self.faces[0].normal
         print(normal)
 
     def test_eq_and_hash(self):
