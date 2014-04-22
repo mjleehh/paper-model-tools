@@ -8,11 +8,10 @@ class Patch:
         self.modelImpl = modelImpl
 
     @property
-    def patchEdges(self):
+    def edges(self):
         edgesByVertex = self._getEdgesByVertex()
+        print(edgesByVertex)
         #print(next(iter(edgesByVertex.items())))
-
-
 
     def _getEdgesByVertex(self):
         def addEdge(connectionIndex):
@@ -27,6 +26,10 @@ class Patch:
         for connection in self.impl.connections:
             addEdge(connection)
         return buckets.store
+
+    @property
+    def name(self):
+        return self.impl.name
 
     @property
     def impl(self):
