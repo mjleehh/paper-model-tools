@@ -1,7 +1,7 @@
 import maya.OpenMayaMPx as omp
 import maya.OpenMaya as om
 
-from .test_collision import detectCollision
+from .detect_collision import detectCollision
 
 from unfolder.model.patch_old import flattenTree
 from unfolder.model.model_builder_old import MeshPatchBuilder
