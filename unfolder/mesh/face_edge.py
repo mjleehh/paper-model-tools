@@ -14,7 +14,10 @@ class FaceEdge:
 
     @property
     def direction(self):
-        return Vector(self.end) - Vector(self.begin)
+        res = Vector(self.end) - Vector(self.begin)
+        if res.norm() == 0:
+            raise Exception('can not compute direction for 0 length edge')
+        return res
 
     @property
     def begin(self):
