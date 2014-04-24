@@ -10,8 +10,8 @@ class Patch:
     @property
     def edges(self):
         edgesByVertex = self._getEdgesByVertex()
-        print(edgesByVertex)
         #print(next(iter(edgesByVertex.items())))
+        return edgesByVertex
 
     def _getEdgesByVertex(self):
         def addEdge(connectionIndex):
@@ -21,9 +21,9 @@ class Patch:
                 buckets.push(sndVertex, edgeIndex)
 
         buckets = StackBuckets()
-        if self.impl.parentConnection:
+        if self.impl.parentConnection is not None:
             addEdge(self.impl.parentConnection)
-        for connection in self.impl.connections:
+        for connection in self.impl.childConnections:
             addEdge(connection)
         return buckets.store
 
