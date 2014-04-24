@@ -2,12 +2,12 @@ import cProfile
 from unfolder.analyze_patch.model_score import calculateModelScore
 from unfolder.automatic_unfold.mesh_to_graph import meshToGraph
 from unfolder.mesh.face import FaceIter
+from unfolder.model.tree_to_model.tree_to_model import treeToModel
 from unfolder.output.model_to_mesh import modelToMesh
 from unfolder.tree.knot import graphToTree
 from unfolder.graph.graph_builder import GraphBuilder
 from unfolder.graph.spanning_trees import SpanningTreeIter, getSpanningTrees
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.model.tree_to_model import treeToModel
 
 
 def printTree(tree, depth=0):

@@ -1,9 +1,9 @@
 from unfolder.mesh.face import FaceIter, Face
-from unfolder.model.edge_proxy import PatchEdgeProxy
+from unfolder.model.tree_to_model.edge_proxy import PatchEdgeProxy
 from unfolder.model.model import Model
 from unfolder.model.model_builder import ModelBuilder
 from unfolder.model.model_impl import PatchImpl
-from unfolder.model.vertex_mapper import VertexMapper
+from unfolder.model.tree_to_model.vertex_mapper import VertexMapper
 
 from unfolder.tree.knot import Knot
 from unfolder.util.appenders import MappingAppender

@@ -1,6 +1,7 @@
 from unittest import TestCase
-from unfolder.model.edge_proxy import PatchEdgeProxy
-from unfolder.model.vertex_mapper import VertexMapper
+
+from unfolder.model.tree_to_model.edge_proxy import PatchEdgeProxy
+from unfolder.model.tree_to_model.vertex_mapper import VertexMapper
 from unfolder.util.vector import Vector
 
 

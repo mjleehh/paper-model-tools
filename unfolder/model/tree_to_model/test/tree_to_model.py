@@ -3,7 +3,7 @@ from unfolder.graph.graph_builder import buildGraph
 from unfolder.graph.graph_impl import GraphImpl, EdgeImpl
 from unfolder.mesh.face import FaceIter
 from unfolder.mesh.obj_importer import ObjImporter
-from unfolder.model.tree_to_model import treeToModel
+from unfolder.model.tree_to_model.tree_to_model import treeToModel
 from unfolder.tree.knot import graphToTree
 
 
