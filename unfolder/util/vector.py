@@ -24,12 +24,15 @@ class Vector:
 
     def __mul__(self, other):
         # works for vectors and scalars
-        return np.dot(self.v, other)
+        res = np.dot(self.v, other)
+        return res if not isinstance(res, np.ndarray) else Vector(res)
 
     def __truediv__(self, scalar):
         if not isinstance(scalar, (int, float, complex)):
             raise DimensionError('Divisor must be scalar!')
         v = self.v.astype(float)
+        if scalar == 0:
+            raise Exception('Cannot rescale vector by divisor 0')
         v /= scalar
         return Vector(v)
 
