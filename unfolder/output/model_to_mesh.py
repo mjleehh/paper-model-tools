@@ -1,20 +1,11 @@
+from unfolder.mesh.mesh_impl import FaceImpl, MeshImpl
 from unfolder.model.model import Model
 
 
 def modelToMesh(model: Model):
-    meshBuilder = MeshBuilder()
-    meshBuilder.vertices = model.impl.vertices
-    meshBuilder.edges = model.impl.edges
+    vertices = model.impl.vertices
+    edges = model.impl.edges
+    faces = []
     for patch in model.patches:
-        edges = patch.patchEdges
-        #meshBuilder.faces.append(FaceImpl(patch.edges, patch.textureCoords))
-        print('patcheeee')
-
-
-class MeshBuilder:
-    def __init__(self):
-        self.faces = []
-        self.edges = []
-        self.vertices = []
-        self.textureCoords = []
-
+        faces.append(FaceImpl(patch.edges, None))
+    return MeshImpl(faces, edges, vertices, None)
