@@ -2,6 +2,15 @@ from unfolder.model.model_impl import ModelImpl, PatchImpl
 from unfolder.util.appenders import StackBuckets
 
 
+def getOther(elem, bituple):
+    (fst, snd) = bituple
+    if elem == fst:
+        return snd
+    elif elem == snd:
+        return fst
+    else:
+        raise Exception('Error element ' + repr(elem) + ' is not in ' + repr(bituple))
+
 class Patch:
     def __init__(self, index, modelImpl: ModelImpl):
         self.index = index
@@ -10,8 +19,35 @@ class Patch:
     @property
     def edges(self):
         edgesByVertex = self._getEdgesByVertex()
-        #print(next(iter(edgesByVertex.items())))
-        return edgesByVertex
+        edgeIndex = initialEdgeIndex = self._getInitialEdge()
+        vertexIndex = self.modelImpl.edges[edgeIndex].vertices[0]
+        edges = []
+        while True:
+            edges.append(edgeIndex)
+            edgeIndex = getOther(edgeIndex, edgesByVertex[vertexIndex])
+            vertexIndex = getOther(vertexIndex, self.modelImpl.edges[edgeIndex].vertices)
+            if edgeIndex == initialEdgeIndex:
+                break
+        return edges
+
+    @property
+    def vertices(self):
+        edgesByVertex = self._getEdgesByVertex()
+        edgeIndex = initialEdgeIndex = self._getInitialEdge()
+        vertexIndex = self.modelImpl.edges[edgeIndex].vertices[0]
+        vertices = []
+        while True:
+            vertices.append(vertexIndex)
+            edgeIndex = getOther(edgeIndex, edgesByVertex[vertexIndex])
+            vertexIndex = getOther(vertexIndex, self.modelImpl.edges[edgeIndex].vertices)
+            if edgeIndex == initialEdgeIndex:
+                break
+        return vertices
+
+    def _getInitialEdge(self):
+        initialConnectionIndex = self.impl.parentConnection if self.impl.parentConnection is not None \
+            else self.impl.childConnections[0]
+        return self.modelImpl.connections[initialConnectionIndex][0]
 
     def _getEdgesByVertex(self):
         def addEdge(connectionIndex):
