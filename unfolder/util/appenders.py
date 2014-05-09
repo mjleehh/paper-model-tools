@@ -1,3 +1,6 @@
+from unfolder.util.vector import Vector
+
+
 class Appender:
     def __init__(self):
         self.store = []
@@ -8,7 +11,7 @@ class Appender:
         return index
 
 
-class IfNewAppender:
+class NewAppender:
     def __init__(self):
         self.store = []
         self.indices = {}
@@ -24,6 +27,30 @@ class IfNewAppender:
 
     def __getitem__(self, item):
         return self.store[item]
+
+
+class VertexAppender:
+    def __init__(self, tolerance = 10E-10):
+        self.tolerance = tolerance
+        self.store = []
+
+    def push(self, vertex):
+        index = self._indexOf(vertex)
+        if index is not None:
+            return index
+        else:
+            index = len(self.store)
+            self.store.append(vertex)
+            return index
+
+    def __getitem__(self, item):
+        return self.store[item]
+
+    def _indexOf(self, vertex):
+        for index, val in enumerate(self.store):
+            if (Vector(val) - vertex).norm() < self.tolerance:
+                return index
+        return None
 
 
 class MappingAppender():
