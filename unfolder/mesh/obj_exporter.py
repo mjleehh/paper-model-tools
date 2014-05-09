@@ -24,5 +24,5 @@ class ObjExporter:
     def writeFace(self, face):
         self.f.write('f')
         for vertex in face.vertexIndices:
-            self.f.write(' ' + str(vertex))
+            self.f.write(' ' + str(vertex + 1))
         self.f.write('\n')
