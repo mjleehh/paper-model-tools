@@ -22,27 +22,6 @@ class PatchImpl:
         return res
 
 
-class FlapImpl:
-    def __init__(self, patch, parentConnection, vertices):
-        self.patch = patch
-        self.parentConnection = parentConnection
-        self.vertices = vertices
-
-
-class ConnectionImpl:
-    def __init__(self, edges):
-        # index of first patch < index of second patch
-        self.edges = edges
-
-    def __repr__(self):
-        res = '('
-        res += 'E = ' + repr(self.edges)
-        res += ')'
-        return res
-
-
-
-
 class EdgeImpl:
     def __init__(self, fstVertexIndex, sndVertexIndex):
         self.vertices = (fstVertexIndex, sndVertexIndex) if fstVertexIndex <= sndVertexIndex else (sndVertexIndex, fstVertexIndex)
